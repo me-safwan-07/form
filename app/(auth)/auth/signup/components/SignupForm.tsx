@@ -3,7 +3,7 @@
 import { XCircleIcon } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { SignupOptions } from "./SignupOptions";
 // import { SignupOptions } from "@formbricks/ui/SignupOptions";
 
@@ -17,7 +17,7 @@ export const SignupForm = ({
   const searchParams = useSearchParams();
   const [error, setError] = useState<string>("");
 
-  const inviteToken = searchParams?.get("inviteToken");
+  // const inviteToken = searchParams?.get("inviteToken");
   // const callbackUrl = useMemo(() => {
   //   if (inviteToken) {
   //     return webAppUrl + "/invite?token=" + inviteToken;
@@ -78,7 +78,7 @@ export const SignupForm = ({
           <span className="leading-5 text-slate-500">Have an account?</span>
           <br />
           <Link
-            href={inviteToken ? `/auth/login?callbackUrl=${callbackUrl}` : "/auth/login"}
+            href={"/auth/login"}
             className="font-semibold text-slate-600 underline hover:text-slate-700">
             Log in.
           </Link>

@@ -1,4 +1,4 @@
-import { WEBAPP_URL } from "@/packages/lib/constants"
+// import { WEBAPP_URL } from "@/packages/lib/constants"
 import { FormWrapper } from "../components/FormWrapper"
 import { SignupForm } from "./components/SignupForm";
 
@@ -8,7 +8,7 @@ const Page = async () => {
             <div className="col-span-3 flex flex-col items-center justify-center">
                 <FormWrapper>
                     <SignupForm
-                        webAppUrl={WEBAPP_URL}
+                        webAppUrl={"http://localhost:3000"}
                         // termsUrl={TERMS_URL}
                         // privacyUrl={PRIVACY_URL}
                         // passwordResetEnabled={!PASSWORD_RESET_DISABLED}

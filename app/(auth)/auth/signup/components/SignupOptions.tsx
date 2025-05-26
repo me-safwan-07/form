@@ -58,7 +58,7 @@ export const SignupOptions = ({
     }
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!isValid) {
