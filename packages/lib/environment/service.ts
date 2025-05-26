@@ -6,6 +6,8 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/packages/database/client";
 import { DatabaseError, ResourceNotFoundError, ValidationError } from "@/packages/types/errors";
 import { z } from "zod";
+import { getOrganizationsByUserId } from "../organization/service";
+import { getProducts } from "../product/service";
 
 export const getEnvironment = (environmentId: string): Promise<TEnvironment | null> =>
     cache(
@@ -79,3 +81,52 @@ export const getEnvironments = (productId: string): Promise<TEnvironment[]> =>
             tags: [environmentCache.tag.byProductId(productId)],
         }
     )();
+
+export const getFirstEnvironmentByUserId = async (userId: string): Promise<TEnvironment | null> => {
+    try {
+        const organizations = await getOrganizationsByUserId(userId);
+        if (organizations.length === 0) {
+            throw new Error(`Unable to get first environment: User ${userId} has no organizations`);
+        }
+        const firstOrganization = organizations[0];
+        const products = await getProducts(firstOrganization.id);
+        if (products.length === 0) {
+            throw new Error(
+                `Unable to get first environment: Organization ${firstOrganization.id} has no products`
+            );
+        }
+        return products;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const createEnvironment = async (
+    productId: string
+): Promise<TEnvironment> => {
+    validateInputs([productId, ZId]);
+
+    try {
+        const environment = await prisma.environment.create({
+            data: {
+                product: {
+                    connect: {
+                        id: productId,
+                    },
+                }
+            },
+        });
+
+        environmentCache.revalidate({
+            id: environment.id,
+            productId: environment.productId,
+        });
+
+        return environment
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            throw new DatabaseError(error.message);
+        }
+        throw error;
+    }
+};

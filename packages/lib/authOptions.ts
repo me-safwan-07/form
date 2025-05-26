@@ -117,6 +117,9 @@ export const authOptions: NextAuthOptions = {
             allowDangerousEmailAccountLinking: true,
         }),
     ],
+    session: {
+        maxAge: 3600,
+    },
     callbacks: {
         async jwt({ token }) {
             const existingUser = await getUserByEmail(token?.email!);
@@ -205,14 +208,10 @@ export const authOptions: NextAuthOptions = {
                     identityProviderAccountId: account.providerAccountId,
                 });
 
-                console.log("Created user profile", userProfile);
-
-                const response = await createAccount({
+                await createAccount({
                     ...account,
                     userId: userProfile.id,
                 });
-
-                console.log("Created account", response);
 
                 const updatedNotificationSettings = {
                     ...userProfile.notificationSettings,

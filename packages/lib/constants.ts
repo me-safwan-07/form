@@ -1,4 +1,5 @@
-import "server-only";
+// import "server-only";
+
 import { env } from "./env";
 
 // URLs
@@ -16,5 +17,9 @@ export const SMTP_PASSWORD = env.SMTP_PASSWORD;
 export const MAIL_FROM = env.MAIL_FROM;
 
 export const NEXTAUTH_SECRET = env.NEXTAUTH_SECRET;
+export const ITEMS_PER_PAGE = 50;
+export const SURVEYS_PER_PAGE = 12;
+export const RESPONSES_PER_PAGE = 10;
+export const TEXT_RESPONSES_PER_PAGE = 5;
 
 export const DEBUG = env.DEBUG === "1";
