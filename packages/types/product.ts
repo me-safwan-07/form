@@ -23,16 +23,36 @@ export const ZProduct = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
   name: z.string().trim().min(1, { message: "Product name cannot be empty" }),
+  organizationId: z.string(),
   styling: ZProductStyling,
   darkOverlay: z.boolean(),
-  environments: z.array(ZEnvironment),
+  environments: z.array(ZEnvironment).optional(),
   logo: ZLogo.nullish(),
 });
 
 export type TProduct = z.infer<typeof ZProduct>;
 
+export const ZProductLegacy = z.object({
+  id: z.string().cuid2(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  name: z.string().trim().min(1, { message: "Product name cannot be empty" }),
+  organizationId: z.string(),
+  styling: ZProductStyling,
+  // clickOutsideClose: z.boolean(),
+  darkOverlay: z.boolean(),
+  environments: z.array(ZEnvironment),
+  brandColor: ZColor.nullish(),
+  highlightBorderColor: ZColor.nullish(),
+  logo: ZLogo.nullish(),
+});
+
+export type TProductLegacy = z.infer<typeof ZProductLegacy>;
+
+
 export const ZProductUpdateInput = z.object({
   name: z.string().trim().min(1, { message: "Product name cannot be empty" }).optional(),
+  organizationId: z.string().optional(),
   highlightBorderColor: ZColor.nullish(),
   darkOverlay: z.boolean().optional(),
   environments: z.array(ZEnvironment).optional(),
