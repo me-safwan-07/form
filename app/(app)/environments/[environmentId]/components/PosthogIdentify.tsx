@@ -18,7 +18,10 @@ export const PosthogIdentify = ({
 }: PosthogIdentifyProps) => {
     const posthog = usePostHog();
 
+
+
     useEffect(() => {
+        console.log("Session given",session);
         if (posthogEnabled && session.user && posthog) {
             posthog.identify(session.user.id, {
                 name: session.user.name,
@@ -28,7 +31,7 @@ export const PosthogIdentify = ({
                 posthog.group("environment", environmentId, { name: environmentId });
             }
         }
-    }, [posthog, session.user, environmentId])
+    }, [posthog, session.user,session, environmentId])
 
     return null;
 }

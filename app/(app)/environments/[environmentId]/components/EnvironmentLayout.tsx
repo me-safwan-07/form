@@ -11,32 +11,32 @@ interface EnvironmentLayoutProps {
 }
 
 export const EnvironmentLayout = async ({ environmentId, children }: EnvironmentLayoutProps) => {
-    const environment = await getEnvironment(environmentId);
+    // const environment = await getEnvironment(environmentId);
 
-    if (!environment) {
-        return <ErrorComponent />
-    }
+    // if (!environment) {
+    //     return <ErrorComponent />
+    // }
 
-    const [products, environments] = await Promise.all([
-        getProductByEnvironmentId(environmentId),
-        getEnvironments(environment.productId)
-    ]);
+    // const [products, environments] = await Promise.all([
+    //     getProductByEnvironmentId(environmentId),
+    //     getEnvironments(environment.productId)
+    // ]);
 
-    if (!products || !environments) {
-        return <ErrorComponent />
-    }
+    // if (!products || !environments) {
+    //     return <ErrorComponent />
+    // }
 
     return (
         <div className="flex h-screen min-h-screen flex-col overflow-hidden">
             <div className="flex h-full">
                 <div id="mainContent" className="flex-1 overflow-y-auto bg-slate-50">
-                    <TopControlBar
+                    {/* <TopControlBar
                         environment={environment}
-                    />
+                    /> */}
                     <div className="mt-14">{children}</div>
                 </div>
             </div>
-            <div className="mt-14">{children}</div>
+            {/* <div className="mt-14">{children}</div> */}
         </div>
 
     ) 
