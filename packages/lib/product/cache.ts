@@ -4,6 +4,7 @@ interface RevalidateProps {
   id?: string;
   userId?: string;
   environmentId?: string;
+  organizationId?: string;
 }
 
 export const productCache = {
@@ -14,14 +15,22 @@ export const productCache = {
     byUserId(userId: string) {
       return `users-${userId}-products`;
     },
+    byOrganizationId(organizationId: string) {
+      return `organizations-${organizationId}-products`;
+    },
     byEnvironmentId(environmentId: string) {
       return `environments-${environmentId}-products`;
     },
   },
-  revalidate({ id, userId, environmentId }: RevalidateProps): void {
+  revalidate({ id, userId, environmentId, organizationId }: RevalidateProps): void {
     if (id) {
       revalidateTag(this.tag.byId(id));
     }
+
+    if (organizationId) {
+      revalidateTag(this.tag.byOrganizationId(organizationId));
+    }
+
 
     if (environmentId) {
       revalidateTag(this.tag.byEnvironmentId(environmentId));

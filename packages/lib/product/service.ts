@@ -8,7 +8,7 @@ import { productCache } from "./cache";
 import { TProduct, TProductUpdateInput, ZProduct, ZProductUpdateInput } from "@/packages/types/product";
 import { createEnvironment } from "../environment/service";
 import { z } from "zod";
-import { ZOptionalNumber } from "@/packages/types/common";
+import { ZOptionalNumber, ZString } from "@/packages/types/common";
 
 
 const selectProduct = {
@@ -45,9 +45,9 @@ export const getProducts = (organizationId: string, page?:number): Promise<TProd
         throw error;
       }
     },
-    [`getProducts-${userId}`],
+    [`getProducts-${organizationId}-${page}`],
     {
-      tags: [productCache.tag.byUserId(userId)],
+      tags: [productCache.tag.byUserId(organizationId)],
     }
   )
 }
@@ -138,31 +138,32 @@ export const updateProduct = async (
 };
 
 export const createProduct = async (
+  organizationId: string,
   productInput: Partial<TProductUpdateInput>
 ): Promise<TProduct> => {
-  validateInputs([productInput, ZProductUpdateInput.partial()]);
+  validateInputs([organizationId, ZString],[productInput, ZProductUpdateInput.partial()]);
 
-  // if (!productInput.name) {
-  //   throw new Error("Product Name is required");
-  // }
+  if (!productInput.name) {
+    throw new Error("Product Name is required");
+  }
 
-  const { ...data } = productInput;
+  const { environments, ...data } = productInput;
 
 
   try {
     const product = await prisma.product.create({
       data: {
         ...data,
-        environments: {
-          connect: data.environments?.map((environment) => ({ id: environment.id })) ?? [],
-        },
+        name: productInput.name,
+        organizationId,
       },
       select: selectProduct,
     });
 
-    // productCache.revalidate({
-    //   id: product.id, 
-    // });
+    productCache.revalidate({
+      id: product.id,
+      organizationId: product.organizationId,
+    });
 
 
     const environment = await createEnvironment(product.id);
