@@ -1,9 +1,16 @@
+"use client";
+
 import { ZOrganization } from "@/packages/types/organizations";
+import { Button } from "@/packages/ui/Button";
+import { FormControl, FormError, FormField, FormItem } from "@/packages/ui/Form";
+import { Input } from "@/packages/ui/Input";
 import { useRouter } from "next/navigation"
 import { useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
+import { createOrganizationAction } from "../actions";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const ZCreateOrganizationFormSchema = ZOrganization.pick({ name: true });
 type TCreateOrganizationForm = z.infer<typeof ZCreateOrganizationFormSchema>;
@@ -17,7 +24,7 @@ export const CreateOrganization = () => {
             name: "",
         },
         mode: "onChange",
-        resolver: zodResolv
+        resolver: zodResolver(ZCreateOrganizationFormSchema),
     });
 
     const organizationName = form.watch("name");
@@ -26,8 +33,10 @@ export const CreateOrganization = () => {
         try {
             setIsSubmitting(true);
             const organizationName = data.name.trim();
+            console.log("Creating organization with name:", organizationName);
             const organization = await createOrganizationAction(organizationName);
-            router.push(`/setup/organizatio/${organization.id}/invite`);
+            router.push(`/setup/organization/${organization.id}/invite`);
+            // router.push(`/setup/organizatio/invite`);
         } catch (error) {
             toast.error("Some error occurred while creating organization");
             setIsSubmitting(false);
@@ -37,7 +46,39 @@ export const CreateOrganization = () => {
 
     return (
         <FormProvider {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+                <div className="flex flex-col items-center space-y-4">
+                    <h2 className="text-2xl font-medium">Setup your organization</h2>
+                    <p>Make it yours</p>
+                    <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormControl>
+                                <Input
+                                    {...field}
+                                    isInvalid={!!form.formState.errors.name}
+                                    placeholder="e.g., Acme Inc"
+                                    className="w-80"
+                                    required
+                                />
+                            </FormControl>
 
+                            <FormError />
+                        </FormItem>
+                        )}
+                    />
+                    <Button
+                        type="submit"
+                        variant="darkCTA"
+                        className="flex w-80 justify-center"
+                        loading={isSubmitting}
+                        disabled={isSubmitting || organizationName.trim() === ""}>
+                        Continue
+                    </Button>
+                </div>
+            </form>
         </FormProvider>
     )
 }
