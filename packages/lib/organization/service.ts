@@ -1,9 +1,9 @@
-import { TOrganization } from "@/packages/types/organizations";
+import { TOrganization, TOrganizationCreateInput, ZOrganizationCreateInput } from "@/packages/types/organizations";
 import { cache } from "../cache";
 import { validateInputs } from "../utils/validate";
 import { ZOptionalNumber, ZString } from "@/packages/types/common";
 import { prisma } from "@/packages/database/client";
-import { ITEMS_PER_PAGE } from "../constants";
+import { BILLING_LIMITS, ITEMS_PER_PAGE, PRODUCT_FEATURE_KEYS } from "../constants";
 import { DatabaseError, ResourceNotFoundError } from "@/packages/types/errors";
 import { Prisma } from "@prisma/client";
 import { organizationCache } from "./cache";
@@ -51,3 +51,71 @@ export const getOrganizationsByUserId = (userId: string, page?: number): Promise
       tags: [organizationCache.tag.byUserId(userId)],
     }
   )();
+
+
+export const getOrganization = (organizationId: string): Promise<TOrganization | nulll> => 
+  cache(
+    async () => {
+      validateInputs([organizationId, ZString]);
+
+      try {
+        const organization = await prisma.organization.findUnique({
+          where: {
+            id: organizationId,
+          },
+          select,
+        });
+        return organization;
+      } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          throw new DatabaseError(error.message);
+        }
+
+        throw error;
+      }
+    },
+    [`getOrganization-${organizationId}`],
+    {
+      tags: [organizationCache.tag.byId(organizationId)],
+    }
+  )();
+
+export const createOrganization = async (
+    organizationInput: TOrganizationCreateInput
+): Promise<TOrganization> => {
+    try {
+        validateInputs([organizationInput, ZOrganizationCreateInput]);
+
+        const organization = await prisma.organization.create({
+            data: {
+                ...organizationInput,
+                billing: {
+                    plan: PRODUCT_FEATURE_KEYS.FREE,
+                    limits: {
+                        monthly: {
+                            responses: BILLING_LIMITS.FREE.RESPONSES,
+                            miu: BILLING_LIMITS.FREE.MIU,
+                        },
+                    },
+                    stripeCustomerId: null,
+                    periodStart: new Date(),
+                    period: "monthly",
+                },
+            },
+            select,
+        })
+
+        organizationCache.revalidate({
+            id: organization.id,
+            count: true,
+        });
+
+        return organization;
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        throw new DatabaseError(error.message);
+      }
+
+      throw error;
+    }
+}
