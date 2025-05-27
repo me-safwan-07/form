@@ -1,3 +1,5 @@
+'use server';
+
 import { authOptions } from "@/packages/lib/authOptions";
 import { createForm } from "@/packages/lib/form/service";
 import { AuthorizationError } from "@/packages/types/errors";
