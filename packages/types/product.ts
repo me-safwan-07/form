@@ -61,3 +61,7 @@ export const ZProductUpdateInput = z.object({
 });
 
 export type TProductUpdateInput = z.infer<typeof ZProductUpdateInput>;
+
+
+export const ZProductConfigChannel = z.enum(["link", "app", "website"]).nullable();
+export type TProductConfigChannel = z.infer<typeof ZProductConfigChannel>;
