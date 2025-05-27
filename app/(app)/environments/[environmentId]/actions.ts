@@ -1,3 +1,6 @@
+"use server";
+
+
 import { authOptions } from "@/packages/lib/authOptions";
 import { createProduct } from "@/packages/lib/product/service";
 import { updateUser } from "@/packages/lib/user/service";
@@ -6,12 +9,13 @@ import { TProduct, TProductUpdateInput } from "@/packages/types/product";
 import { getServerSession } from "next-auth";
 
 export const createProductAction = async (
+    organizationId: string,
     productInput: TProductUpdateInput
 ): Promise<TProduct> => {
     const session  = await getServerSession(authOptions);
     if (!session) throw new AuthorizationError("Not authenticated");
 
-    const product = await createProduct(productInput);
+    const product = await createProduct(organizationId, productInput);
     const updatedNotificationSettings = {
         ...session.user.notificationSettings,
         alert: {

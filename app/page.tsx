@@ -21,12 +21,14 @@ const Page = async () => {
   let environment: TEnvironment | null = null;
 
   try {
-    environment = await getFirstEnvironmentByUserId(session?.user.id); 
+    environment = await getFirstEnvironmentByUserId(session?.user.id);
+    console.log("Environment:", environment);
   } catch (error) {
     console.error(`error getting environment: ${error}`)
   }
 
   const userOrganization = await getOrganizationsByUserId(session.user.id);
+  // console.log("User Organization:", userOrganization);
   if (userOrganization.length === 0) {
     return redirect("/setup/organization/create");
   }

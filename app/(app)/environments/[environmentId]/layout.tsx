@@ -10,6 +10,7 @@ const EnvLayout = async ({ children, params }) => {
     if (!session) {
         return redirect("/auth/login");
     }
+    
 
     return (
         <>
