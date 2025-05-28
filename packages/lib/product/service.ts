@@ -86,7 +86,6 @@ export const getProductByEnvironmentId = (environmentId: string): Promise<TProdu
     }
   )();
 
-
 export const updateProduct = async (
   productId: string,
   inputProduct: TProductUpdateInput
@@ -136,6 +135,31 @@ export const updateProduct = async (
     throw new ValidationError("Data validation of product failed");
   }
 };
+
+export const getProduct = async (productId: string): Promise<TProduct | null> =>
+  cache(
+    async () => {
+      try {
+        const prodcutPrisma = await prisma.product.findUnique({
+          where: {
+            id: productId,
+          },
+          select: selectProduct,
+        });
+
+        return prodcutPrisma as TProduct;
+      } catch (error) {
+       if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          throw new DatabaseError(error.message);
+        }
+        throw error;
+      }
+    },
+    [`getProduct-${productId}`],
+    {
+      tags: [productCache.tag.byId(productId)],
+    }
+  )();;
 
 export const createProduct = async (
   organizationId: string,

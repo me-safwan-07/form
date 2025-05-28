@@ -27,7 +27,7 @@ const formDefault: TTemplate["preset"] = {
 
 export const customForm = {
   name: "Start from scratch",
-  description: "Create a survey without template.",
+  // description: "Create a survey without template.",
   preset: {
     ...formDefault,
     name: "New Form",
