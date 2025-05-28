@@ -179,3 +179,4 @@ export const ZForm = z.object({
 export type TForm = z.infer<typeof ZForm>;
 
 
+export type TFormEditorTabs = "questions" | "settings" | "styling";
