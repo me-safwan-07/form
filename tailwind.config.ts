@@ -11,6 +11,7 @@ export default {
   ],
   theme: {
     extend: {
+
       animation: {
         "ping-slow": "ping 2s cubic-bezier(0, 0, 0.2, 1) infinite",
         shake: "shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both",
@@ -32,12 +33,39 @@ export default {
         "card-lg": "0px 2px 51px -19px rgba(30,41,59,0.40)",
       },
       colors: {
-        brand: {
-          DEFAULT: "#00E6CA",
-          light: "#00E6CA",
-          dark: "#00C4B8",
-        },
-        focus: "var(--formbricks-focus, #1982fc)",
+        brand: "var(--fb-brand-color)",
+        "on-brand": "var(--fb-brand-text-color)",
+        border: "var(--fb-border-color)",
+        "border-highlight": "var(--fb-border-color-highlight)",
+        focus: "var(--fb-focus-color)",
+        heading: "var(--fb-heading-color)",
+        subheading: "var(--fb-subheading-color)",
+        placeholder: "var(--fb-placeholder-color)",
+        "info-text": "var(--fb-info-text-color)",
+        signature: "var(--fb-signature-text-color)",
+        "branding-text": "var(--fb-branding-text-color)",
+        "survey-bg": "var(--fb-survey-background-color)",
+        "survey-border": "var(--fb-survey-border-color)",
+        "survey-shadow": "var(--fb-survey-shadow-color)",
+        "accent-bg": "var(--fb-accent-background-color)",
+        "accent-selected-bg": "var(--fb-accent-background-color-selected)",
+        "input-bg": "var(--fb-input-background-color)",
+        "input-bg-selected": "var(--fb-input-background-color-selected)",
+        // placeholder: "var(--fb-placeholder-color)",
+        shadow: "var(--fb-shadow-color)",
+        "rating-fill": "var(--fb-rating-fill)",
+        "rating-focus": "var(--fb-rating-hover)",
+        "rating-selected": "var(--fb-rating-selected)",
+        "back-button-border": "var(--fb-back-btn-border)",
+        "submit-button-border": "var(--fb-submit-btn-border)",
+        "close-button": "var(--fb-close-btn-color)",
+        "close-button-focus": "var(--fb-close-btn-hover-color)",
+        // brand: {
+        //   DEFAULT: "#00E6CA",
+        //   light: "#00E6CA",
+        //   dark: "#00C4B8",
+        // },
+        // focus: "var(--formbricks-focus, #1982fc)",
         error: "rgb(from var(--formbricks-error) r g b / <alpha-value>)",
         brandnew: "var(--formbricks-brand, #038178)",
         borderColor: {
@@ -82,14 +110,14 @@ export default {
             transform: "translate3d(4px, 0, 0)",
           },
         },
-        "accordion-down": {
-          from: { height: 0 },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: 0 },
-        },
+        // "accordion-down": {
+        //   from: { height: 0 },
+        //   to: { height: "var(--radix-accordion-content-height)" },
+        // },
+        // "accordion-up": {
+        //   from: { height: "var(--radix-accordion-content-height)" },
+        //   to: { height: 0 },
+        // },
       },
       width: {
         "sidebar-expanded": "4rem",
