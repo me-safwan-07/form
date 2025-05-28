@@ -2,6 +2,7 @@ import { authOptions } from "@/packages/lib/authOptions";
 import { WEBAPP_URL } from "@/packages/lib/constants";
 import { getEnvironment } from "@/packages/lib/environment/service";
 import { getFormCount } from "@/packages/lib/form/service";
+import { getProductByEnvironmentId } from "@/packages/lib/product/service";
 // import { Button } from "@/packages/ui/Button"
 import { PageContentWrapper } from "@/packages/ui/PageContentWrapper";
 import { TemplateList } from "@/packages/ui/TemplateList";
@@ -21,8 +22,14 @@ interface FormTemplateProps {
 
 const Page = async ({ params }: FormTemplateProps) => {
     const session = await getServerSession(authOptions);
+    const product = await getProductByEnvironmentId(params.environmentId)
+     
     if  (!session) {
         throw new Error("Session not found");
+    }
+
+    if (!product) {
+        throw new Error("Organization not found");
     }
 
     const environment = await getEnvironment(params.environmentId);
@@ -47,8 +54,8 @@ const Page = async ({ params }: FormTemplateProps) => {
                     </h1>
                     <TemplateList
                         environment={environment}
-                        // WEBAPP_URL={WEBAPP_URL}
-                        userId={session.user}
+                        product={product}
+                        user={session.user}
                     />
                 </>
             )}
