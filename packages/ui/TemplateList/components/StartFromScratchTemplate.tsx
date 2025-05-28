@@ -3,30 +3,31 @@ import { TTemplate } from "@/packages/types/templates";
 import { PlusCircleIcon } from "lucide-react"
 import { Button } from "../../Button";
 import { cn } from "@/packages/lib/cn";
+import { TProduct } from "@/packages/types/product";
+import { replacePresetPlaceholders } from "../lib/utils";
 
 interface StartFromScratchTemplateProps {
   activeTemplate: TTemplate | null;
   setActiveTemplate: (template: TTemplate) => void;
   onTemplateClick: (template: TTemplate) => void;
-//   product: TProduct;
-  createSurvey: (template: TTemplate) => void;
+  product: TProduct;
+  createForm: (template: TTemplate) => void;
   loading: boolean;
 } 
 
 export const StartFromScratchTemplate = ({
     activeTemplate,
     setActiveTemplate,
-    onTemplateClick,
-    // product,
-    createSurvey,
+    // onTemplateClick,
+    product,
+    createForm,
     loading,
 }: StartFromScratchTemplateProps) => {
     return (
         <button
             type="button"
             onClick={() => {
-                // const newTemplate = replacePresetPlaceholders(customSurvey, product);
-                const newTemplate = customForm;
+                const newTemplate = replacePresetPlaceholders(customForm, product);
                 // onTemplateClick(newTemplate);
                 setActiveTemplate(newTemplate);
             }}
@@ -41,16 +42,16 @@ export const StartFromScratchTemplate = ({
             <p className="text-left text-xs text-slate-600">{customForm.description}</p>
             {activeTemplate?.name === customForm.name && (
                 <div className="text-left">
-                <Button
-                    variant="darkCTA"
-                    className="mt-6 px-6 py-3"
-                    disabled={activeTemplate === null}
-                    loading={loading}
-                    onClick={() => createSurvey(activeTemplate)}>
-                    Create survey
-                </Button>
+                    <Button
+                        variant="darkCTA"
+                        className="mt-6 px-6 py-3"
+                        disabled={activeTemplate === null}
+                        loading={loading}
+                        onClick={() => createForm(activeTemplate)}>
+                        Create survey
+                    </Button>
                 </div>
             )}
-            </button>
+        </button>
     )
 };

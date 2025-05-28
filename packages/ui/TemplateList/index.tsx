@@ -8,17 +8,20 @@ import { TEnvironment } from "@/packages/types/environment";
 import { TUser } from "@/packages/types/user";
 import { useRouter } from "next/navigation";
 import { TFormInput } from "@/packages/types/forms";
+import { TProduct } from "@/packages/types/product";
+import { create } from "domain";
 
 interface TemplateListProps {
     user: TUser;
     environment: TEnvironment;
     onTemplateClick?: (template: TTemplate) => void;
-
+    product: TProduct
 }
 
 export const TemplateList = ({
     user,
     environment,
+    product,
     onTemplateClick
 }: TemplateListProps) => {
     const router = useRouter();
@@ -28,11 +31,13 @@ export const TemplateList = ({
     const createForm = async (activeTemplate: TTemplate) => {
         setLoading(true);
         const augumentedTemplate: TFormInput  ={
-            ...activeTemplate,
+            ...activeTemplate.preset,
             createdBy: user.id,
         };
+        console.log("Template argumeant",augumentedTemplate )
         const form = await createFormAction(environment.id, augumentedTemplate);
-        router.push(`/environment/${environment.id}/forms/${form.id}/edit`);
+        console.log("Create Form data", form)
+        router.push(`/environments/${environment.id}/forms/${form.id}/edit`);
     }
     return (
         <main className="relative z-0 flex-1 overflow-y-auto px-6 pb-6 focus:outline-none">
@@ -43,6 +48,7 @@ export const TemplateList = ({
                     onTemplateClick={onTemplateClick}
                     createForm={createForm}
                     loading={loading}
+                    product={product}
                 />  
             </div>
         </main>
