@@ -10,6 +10,7 @@ import { LoadingSkeleton } from "./LoadingSkeleton";
 import { FormMenuBar } from "./FormMenuBar";
 import { TEnvironment } from "@/packages/types/environment";
 import { QuestionsAudienceTabs } from "./QuestionsStylingSettingsTabs";
+import { QuestionsView } from "./QuestionsView";
 
 interface FormEditorProps {
     form: TForm;
@@ -25,11 +26,11 @@ export const FormEditor = ({
     const [activeView, setActiveView] = useState<TFormEditorTabs>("questions")
     const [activeQuestionId, setActiveQuestionId] = useState<string | null>(null);
     const [localForm, setLocalForm] = useState<TForm | null> (() => structuredClone(form));
-    const [invalidQuestions, setInvalidQuestions] = useState<string[] | null>(null);
+    // const [invalidQuestions, setInvalidQuestions] = useState<string[] | null>(null);
     const formEditorRef = useRef(null);
     const [localProduct, setLocalProduct] = useState<TProduct>(product);
 
-    const [styling, setStyling] = useState(localForm?.styling);
+    // const [styling, setStyling] = useState(localForm?.styl);
     // const [localStylingChanges, setLocalStylingChanges] = useState<
 
     const fetchLatestProduct = useCallback(async () => {
@@ -40,6 +41,11 @@ export const FormEditor = ({
     }, [localProduct.id]);
 
     useDocumentVisibility(fetchLatestProduct);
+
+    useEffect(() => {
+        console.log("LocalForm: ", localForm);
+        console.log("form", form);
+    }, [localForm, form]);
 
     useEffect(() => {
         if (form) {
@@ -106,6 +112,16 @@ export const FormEditor = ({
                             setActiveId={setActiveView}
                             isStylingTabVisible={!!product.styling.allowStyleOverwrite}
                         />
+
+                        {activeView === "questions" && (
+                            <QuestionsView 
+                                localForm={localForm}
+                                setLocalForm={setLocalForm}
+                                activeQuestionId={activeQuestionId}
+                                setActiveQuestionId={setActiveQuestionId}
+                                product={localProduct}
+                            />
+                        )}
                     </main>
                 </div>
             </div>

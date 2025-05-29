@@ -131,7 +131,7 @@ export const FormMenuBar = ({
                         />
                     </div>
                     <Button
-                        disabled={!disableSave}
+                        disabled={disableSave}
                         variant="secondary"
                         className="mr-3"
                         loading={isFormSaving}
