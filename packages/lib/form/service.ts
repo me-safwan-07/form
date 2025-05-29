@@ -5,7 +5,9 @@ import { formCache } from "./cache";
 import { DatabaseError, ResourceNotFoundError } from "@/packages/types/errors";
 import { Prisma } from "@prisma/client";
 import { cache } from "../cache";
-import { TForm, TFormInput, ZForm } from "@/packages/types/forms";
+import { TForm, TFormFilterCriteria, TFormInput, ZForm } from "@/packages/types/forms";
+import { ZOptionalNumber } from "@/packages/types/common";
+import { buildOrderByClause, buildWhereClause } from "./utils";
 
 export const selectForm = {
   id: true,
@@ -71,6 +73,50 @@ export const getForm = (formId: string): Promise<TForm | null> =>
         }
     )();
 
+export const getForms = (
+    environmentId: string,
+    limit?: number,
+    offset?: number,
+    filterCriteria?: TFormFilterCriteria
+): Promise<TForm[]> => 
+    cache(
+        async () => {
+            validateInputs([environmentId, ZId], [limit, ZOptionalNumber], [offset, ZOptionalNumber]);
+            try {
+                const formsPrisma = await prisma.form.findMany({
+                    where: {
+                        environmentId,
+                        ...buildWhereClause(filterCriteria),
+                    },
+                    select: selectForm,
+                    orderBy: buildOrderByClause(filterCriteria?.sortBy),
+                    take: limit ? limit : undefined,
+                    skip: offset ? offset : undefined,
+                });
+
+                const forms: TForm[] = [];
+
+                for (const formPrisma of formsPrisma) {
+                    const parsedForm = ZForm.parse(formPrisma);
+                    forms.push(parsedForm);
+                }
+
+                return forms;
+            } catch (error) {
+                if (error instanceof Prisma.PrismaClientKnownRequestError) {
+                console.error(error);
+                throw new DatabaseError(error.message);
+                }
+
+                throw error;
+            }
+        },
+        [`getForms-${environmentId}-${limit}-${offset}-${JSON.stringify(filterCriteria)}`],
+        {
+            tags: [formCache.tag.byEnvironmentId(environmentId)],
+        }
+    )();
+
 
 export const getFormCount = async (environmentId: string): Promise<number> => 
     cache(
@@ -102,16 +148,18 @@ export const getFormCount = async (environmentId: string): Promise<number> =>
 export const updateForm = async (updateForm: TForm): Promise<TForm> => {
     validateInputs([updateForm, ZForm]);
 
+    console.log("UpdatedForm", updateForm);
     try {
         const formId = updateForm.id;
         let data: any = {}; 
 
         const currentForm = await getForm(formId);
+        console.log("CurrentForm", currentForm);
         if (!currentForm) {
             throw new ResourceNotFoundError("Form", formId);
         }
 
-        const {  questions, ...formdata} = updateForm;
+        const { questions, id, ...formdata } = updateForm; // 💡 Destructure and omit `id`
 
         data.questions = questions.map((question) => {
             const { ...rest } = question;
@@ -125,20 +173,8 @@ export const updateForm = async (updateForm: TForm): Promise<TForm> => {
             ...data,
         };
 
-        // TODO if in future add the runOnDate unComment below code
-        // Remove scheduled status when runOnDate is not set
-        // if (data.status === "scheduled" && data.runOnDate === null) {
-        //     data.status = "inProgress";
-        // }
-        // Set scheduled status when runOnDate is set and in the future on completed surveys
-        // if (
-        //     (data.status === "completed" || data.status === "paused" || data.status === "inProgress") &&
-        //     data.runOnDate &&
-        //     data.runOnDate > new Date()
-        // ) {
-        //     data.status = "scheduled";
-        // }
-        
+        console.log("data", data);
+
         const prismaForm = await prisma.form.update({
             where: { id: formId },
             data,
@@ -153,10 +189,8 @@ export const updateForm = async (updateForm: TForm): Promise<TForm> => {
         return prismaForm as TForm;
     } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            console.error(error);
             throw new DatabaseError(error.message);
         }
-        console.log(error)
         throw error;
     }
 }

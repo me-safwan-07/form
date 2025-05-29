@@ -9,6 +9,7 @@ export const gethasNoOrganizations = (): Promise<boolean> =>
         async () => {
             try {
                 const organizationCount = await prisma.organization.count();
+                console.log("count",organizationCount)
                 return organizationCount === 0
             } catch (error) {
                 if (error instanceof Prisma.PrismaClientKnownRequestError) {
