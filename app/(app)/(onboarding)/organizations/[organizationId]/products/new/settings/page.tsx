@@ -5,11 +5,11 @@ import { ProductSettings } from "./components/ProductSettings";
 import { DEFAULT_BRAND_COLOR } from "@/packages/lib/constants";
 
 const Page = async ({ params, searchParams }) => {
-    const channel = searchParams.channel;
-    const industry = searchParams.industry;
-    if (!channel || !industry) {
-        return notFound();
-    }
+    // const channel = searchParams.channel;
+    // const industry = searchParams.industry;
+    // if (!channel || !industry) {
+    //     return notFound();
+    // }
     // const products = await getProducts(params.organizationId);
 
     return(
