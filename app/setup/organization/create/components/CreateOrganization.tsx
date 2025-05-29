@@ -11,6 +11,8 @@ import toast from "react-hot-toast";
 import { z } from "zod";
 import { createOrganizationAction } from "../actions";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createProductAction } from "@/app/(app)/environments/[environmentId]/actions";
+import { TProductUpdateInput } from "@/packages/types/product";
 
 const ZCreateOrganizationFormSchema = ZOrganization.pick({ name: true });
 type TCreateOrganizationForm = z.infer<typeof ZCreateOrganizationFormSchema>;
@@ -29,14 +31,31 @@ export const CreateOrganization = () => {
 
     const organizationName = form.watch("name");
 
+    // const addProduct = async (data: TProductUpdateInput) => {
+    //     try {
+    //         const product = await createProductAction(organizationId, {
+    //             ...data
+    //         });
+
+    //         const productionEnvironment = product.environments[0];
+    //         console.log("Created product:", productionEnvironment);
+    //         router.push(`/environments/${productionEnvironment.id}/forms`);
+    //     } catch (error) {
+    //         toast.error("Product creation failed");
+    //         console.error("Error creating product:", error);
+    //     }
+    // };
+
+
     const onSubmit: SubmitHandler<TCreateOrganizationForm> = async (data) => {
         try {
             setIsSubmitting(true);
             const organizationName = data.name.trim();
             console.log("Creating organization with name:", organizationName);
-            const organization = await createOrganizationAction(organizationName);
-            router.push(`/setup/organization/${organization.id}/invite`);
-            // router.push(`/setup/organizatio/invite`);
+            const product = await createOrganizationAction(organizationName);
+
+            const productionEnvironment = product.environments[0];
+            router.push(`/environments/${productionEnvironment.id}/forms`);
         } catch (error) {
             toast.error("Some error occurred while creating organization");
             setIsSubmitting(false);
