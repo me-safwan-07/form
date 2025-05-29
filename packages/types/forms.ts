@@ -96,6 +96,9 @@ export const ZFormMultipleChoiceQuestion = ZFormQuestionBase.extend({
   otherOptionPlaceholder: ZI18nString.optional(),
 })
 
+export type TFormMultipleChoiceQuestion = z.infer<typeof ZFormMultipleChoiceQuestion>;
+
+
 export const ZFormQuestion = z.union([
   ZFormOpenTextQuestion,
 //   ZFormConsentQuestion,
@@ -180,3 +183,18 @@ export type TForm = z.infer<typeof ZForm>;
 
 
 export type TFormEditorTabs = "questions" | "settings" | "styling";
+
+export const ZFormFilterCriteria = z.object({
+  name: z.string().optional(),
+  status: z.array(ZFormStatus).optional(),
+  // // type: z.array(ZFormType).optional(),
+  // createdBy: z
+  //   .object({
+  //     userId: z.string(),
+  //     value: z.array(z.enum(["you", "others"])),
+  //   })
+  //   .optional(),
+  sortBy: z.enum(["createdAt", "updatedAt", "name"]).optional(),
+});
+
+export type TFormFilterCriteria = z.infer<typeof ZFormFilterCriteria>;
