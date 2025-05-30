@@ -21,8 +21,8 @@ export const AddQuestionButton = ({ addQuestion, product }: AddQuestionButtonPro
             open={open}
             onOpenChange={setOpen}
             className={cn(
-                open ? "scale-100 shadow-lg" : "scale-97 shadow-md",
-                "group w-full space-y-2 rounded-lg border border-slate-300 bg-white transition-all duration-300 ease-in-out hover:scale-100 hover:cursor-pointer hover:bg-slate-50"
+                // open ? "scale-100 shadow-lg" : "scale-50 shadow-md",
+                "scale-97 group w-full space-y-2 rounded-lg border border-slate-300 bg-white transition-all duration-300 ease-in-out hover:cursor-pointer hover:bg-slate-50"
         )}>
             <Collapsible.CollapsibleTrigger asChild className="group h-full w-full">
                 <div className="inline-flex">
