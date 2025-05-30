@@ -16,13 +16,13 @@ const Page = async () => {
 
   if (!session) throw new AuthenticationError("Not Authenticated");
 
-  const hasNoOrganizations = await gethasNoOrganizations();
+  // const hasNoOrganizations = await gethasNoOrganizations();
 
-  if (hasNoOrganizations) {
+  // if (hasNoOrganizations) {
      return <CreateOrganization />
-  }
+  // }
 
-  return notFound();
+  // return notFound();
 }
 
 export default Page;
