@@ -1,28 +1,38 @@
-import { useCallback, useEffect, useState } from "react";
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "../Button";
 import { getFormsAction } from "./actions";
+import { TForm, TFormFilters } from "@/packages/types/forms";
+import { getFormattedFilters } from "./utils";
+import { FormCard } from "./components/FormCard";
+import { TEnvironment } from "@/packages/types/environment";
+
+interface FormsListProps {
+    environment: TEnvironment;
+    WEBAPP_URL: string;
+    formsPerPage: number;
+}
 
 
 export const initialFilters: TFormFilters = {
   name: "",
-//   createdBy: [],
   status: [],
-//   type: [],
   sortBy: "updatedAt",
 };
-
 
 export const FormsList = ({
     environment,
     WEBAPP_URL,
-    userId,
     formsPerPage: formsLimit,
-}) => {
+}: FormsListProps) => {
     const [forms, setForms] = useState<TForm[]>([]);
     const [isFetching, setIsFetching] = useState(true);
     const [hasMore, setHasMore] = useState<boolean>(true);
 
-    // const [formFilters, setFormFilters] = useState<
+    const [formFilters, setFormFilters] = useState<TFormFilters>(initialFilters);
+
+    const filters = useMemo(() => getFormattedFilters(formFilters), [formFilters]);
     
     const [orientation, setOrientation] = useState("");
 
@@ -37,10 +47,43 @@ export const FormsList = ({
         }
     }, []);
 
+    useEffect(() => {
+        const fetchInitialForms = async () => {
+            setIsFetching(true);
+            const res = await getFormsAction(environment.id, formsLimit, undefined, filters);
+            if (res.length < formsLimit) {
+                setHasMore(false);
+            } else {
+                setHasMore(true);
+            }
+            setForms(res);
+            setIsFetching(false);
+        };
+        fetchInitialForms();
+    }, [environment.id, formsLimit, filters]);
+
     const fetchNextPage = useCallback(async () => {
         setIsFetching(true);
         const newForms = await getFormsAction(environment.id, formsLimit, forms.length, filters);
-    })
+        if (newForms.length === 0 || newForms.length < formsLimit) {
+            setHasMore(false);
+        } else {
+            setHasMore(true);
+        }
+
+        setForms([...forms, ...newForms]);
+        setIsFetching(false);
+    }, [environment.id, forms, formsLimit, filters]);
+
+    const handleDeleteForm = async (formId: string) => {
+        const newForms = forms.filter((form) => form.id !== formId);
+        setForms(newForms); 
+    };
+
+    const handleDuplicateForm = async (form: TForm) => {
+        const newForms = [form, ...forms];
+        setForms(newForms);
+    }
   
     return (
         <div className="space-y-6">
@@ -58,7 +101,33 @@ export const FormsList = ({
 
                             {forms.map((form) => {
                                 return (
+                                    <FormCard 
+                                        key={form.id}
+                                        form={form}
+                                        environment={environment}
+                                        WEBAPP_URL={WEBAPP_URL}
+                                        orientation={orientation}
+                                        duplicateForm={handleDuplicateForm}
+                                        deleteForm={handleDeleteForm}
+                                    />
+                                )
+                            })}
+                        </div>
+                    )}
 
+                    {orientation === "grid" && (
+                        <div className="">
+                            {forms.map((form) => {
+                                return (
+                                    <FormCard 
+                                        key={form.id}
+                                        form={form}
+                                        environment={environment}
+                                        WEBAPP_URL={WEBAPP_URL}
+                                        orientation={orientation}
+                                        duplicateForm={handleDuplicateForm}
+                                        deleteForm={handleDeleteForm}
+                                    />
                                 )
                             })}
                         </div>
