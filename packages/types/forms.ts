@@ -198,3 +198,11 @@ export const ZFormFilterCriteria = z.object({
 });
 
 export type TFormFilterCriteria = z.infer<typeof ZFormFilterCriteria>;
+
+export const ZFormFilters = z.object({
+  name: z.string(),
+  status: z.array(ZFormStatus),
+  sortBy: z.enum(["createdAt", "updatedAt", "name"]),
+});
+
+export type TFormFilters = z.infer<typeof ZFormFilters>;
