@@ -8,6 +8,7 @@ import { cache } from "../cache";
 import { TForm, TFormFilterCriteria, TFormInput, ZForm } from "@/packages/types/forms";
 import { ZOptionalNumber } from "@/packages/types/common";
 import { buildOrderByClause, buildWhereClause } from "./utils";
+import { structuredClone } from "../pollyfills/structuredClone";
 
 export const selectForm = {
   id: true,
@@ -195,6 +196,36 @@ export const updateForm = async (updateForm: TForm): Promise<TForm> => {
     }
 }
 
+
+export const deleteForm = async (formId: string) => {
+    validateInputs([formId, ZId]);
+
+    try {
+        const deletedForm = await prisma.form.delete({
+            where: {
+                id: formId,
+            },
+            select: selectForm,
+        });
+
+        // TODO delete the responsecache after creating the responses service file
+
+        formCache.revalidate({
+            id: deletedForm.id,
+            environmentId: deletedForm.environmentId,
+        });
+
+        return deleteForm;
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            console.error(error);
+            throw new DatabaseError(error.message);
+        }
+
+        throw error;
+    }
+};
+
 export const createForm = async (environmentId: string, formBody: TFormInput): Promise<TForm> => {
     validateInputs([environmentId, ZId]);
 
@@ -232,6 +263,59 @@ export const createForm = async (environmentId: string, formBody: TFormInput): P
         })
 
         return form as TForm;
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            console.error(error);
+            throw new DatabaseError(error.message);
+        }
+
+        throw error;
+    }
+};
+
+export const duplicateForm = async (environmentId: string, formId: string, userId: string) => {
+    validateInputs([environmentId, ZId], [formId, ZId])
+    
+    try {
+        const existingForm = await getForm(formId);
+        const currentDate = new Date();
+        if (!existingForm) {
+            throw new ResourceNotFoundError("Form", formId);;
+        }
+
+        // Create new form with the data of the existing  form
+        const newForm = await prisma.form.create({
+            data: {
+                ...existingForm,
+                id: undefined, // id is auto-generated,
+                environmentId: undefined, // environmentId is set below
+                createdAt: currentDate,
+                updatedAt: currentDate,
+                createdBy: undefined,
+                name: `${existingForm.name} (copy)`,
+                status: "draft",
+                questions: structuredClone(existingForm.questions),
+                thankYouCard: structuredClone(existingForm.thankYouCard),
+                environment: {
+                    connect: {
+                        id: environmentId
+                    }
+                },
+                creator: {
+                    connect: {
+                        id: userId,
+                    }
+                },
+                
+            }
+        });
+
+        formCache.revalidate({
+            id: newForm.id,
+            environmentId: newForm.environmentId,
+        });
+
+        return newForm;
     } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
             console.error(error);
