@@ -35,7 +35,7 @@ const Page = async () => {
 
   if (!environment) {
     console.error("Failed to get first environment of user");
-    return redirect(`/organizations/${userOrganization[0].id}/products/new/channel`);
+    return redirect(`/organizations/${userOrganization[0].id}/products/new/settings`);
   }
 
   return redirect(`/environments/${environment.id}`);

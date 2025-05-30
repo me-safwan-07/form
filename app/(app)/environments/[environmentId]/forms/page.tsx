@@ -4,6 +4,7 @@ import { getEnvironment } from "@/packages/lib/environment/service";
 import { getFormCount } from "@/packages/lib/form/service";
 import { getProductByEnvironmentId } from "@/packages/lib/product/service";
 import { Button } from "@/packages/ui/Button";
+import { FormsList } from "@/packages/ui/FormsList";
 // import { Button } from "@/packages/ui/Button"
 import { PageContentWrapper } from "@/packages/ui/PageContentWrapper";
 import { PageHeader } from "@/packages/ui/PageHeader";
@@ -58,10 +59,10 @@ const Page = async ({ params }: FormTemplateProps) => {
             {formCount > 0 ? (
                 <>
                     <PageHeader pageTitle="Forms" cta={CreateSurveyButton} />
-                    <FormsList 
+                    <FormsList
                         environment={environment}
                         WEBAPP_URL={WEBAPP_URL}
-                        userId={session.user.id}
+                        userId={session.user?.id as string}
                         formsPerPage={FORMS_PER_PAGE}
                     />
                 </>
