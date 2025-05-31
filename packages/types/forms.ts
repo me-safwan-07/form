@@ -206,3 +206,6 @@ export const ZFormFilters = z.object({
 });
 
 export type TFormFilters = z.infer<typeof ZFormFilters>;
+
+
+export type TFormOpenTextQuestionInputType = z.infer<typeof ZFormOpenTextQuestionInputType>;
