@@ -9,6 +9,7 @@ import {
   TFormQuestionTypeEnum as QuestionId,
   TFormMultipleChoiceQuestion,
   TFormOpenTextQuestion,
+  TFormQuestionTypeEnum,
 } from "@/packages/types/forms";
 import { replaceQuestionPresetPlaceholders } from "@/packages/ui/TemplateList/lib/utils";
 
@@ -59,3 +60,11 @@ export const getQuestionDefaults = (id: string, product: any) => {
   const questionType = questionTypes.find((questionType) => questionType.id === id);
   return replaceQuestionPresetPlaceholders(questionType?.preset, product);
 };
+
+export const QUESTIONS_NAME_MAP = questionTypes.reduce(
+  (prev, curr) => ({
+    ...prev,
+    [curr.id]: curr.label,
+  }),
+  {}
+) as Record<TFormQuestionTypeEnum, string>;
