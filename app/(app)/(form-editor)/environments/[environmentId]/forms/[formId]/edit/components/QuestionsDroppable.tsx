@@ -7,7 +7,7 @@ interface QuestionsDraggableProps {
     localForm: TForm;
     product: TProduct;
     moveQuestion: (questionIndex: number, up: boolean) => void;
-    updateQuestion: (question: number) => void;
+    updateQuestion: (question: number, updatedAttributes: any) => void;
     deleteQuestion: (questionIdx: number) => void;
     duplicateQuestion: (questionIdx: number) => void;
     activeQuestionId: string | null;

@@ -1,12 +1,14 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { TForm, TFormQuestion } from "@/packages/types/forms";
+import { TForm, TFormQuestion, TFormQuestionTypeEnum } from "@/packages/types/forms";
 import { TProduct } from "@/packages/types/product";
 import { cn } from "@/packages/lib/cn";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { GripIcon } from "lucide-react";
 import { Label } from "@/packages/ui/Label";
 import { Switch } from "@/packages/ui/Switch";
+import { QuestionMenu } from "./QuestionMenu";
+import { OpenQuestionForm } from "./OpenQuestionForm";
 
 interface QuestionCardProps {
     localForm: TForm;
@@ -102,8 +104,33 @@ export const QuestionCard = ({
                                 )}
                             </div>
                         </div>
+
+                        <div className="flex items-center space-x-2">
+                            <QuestionMenu 
+                                questionIdx={questionIdx}
+                                lastQuestion={lastQuestion}
+                                duplicateQuestion={duplicateQuestion}
+                                deleteQuestion={deleteQuestion}
+                                moveQuestion={moveQuestion}
+                                question={question}
+                                product={product}
+                                // updateQuestion={updateQuestion}
+                                addQuestion={addQuestion}
+                            />
+                        </div>
                     </div>
                 </Collapsible.CollapsibleTrigger>
+
+                <Collapsible.CollapsibleContent className="px-4 pb-4">
+                    {question.type === TFormQuestionTypeEnum.OpenText ? (
+                        <OpenQuestionForm 
+                            localForm={localForm}
+                            question={question}
+                            questionIdx={questionIdx}
+                            updateQuestion={updateQuestion}
+                        />
+                    ) : null}
+                </Collapsible.CollapsibleContent>
 
                 {open && (
                     <div className="mx-4 flex justify-end space-x-6 border-t border-slate-200">
@@ -116,9 +143,9 @@ export const QuestionCard = ({
                                     checked={question.longAnswer !== false}
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        updateQuestion(questionIdx, {
-                                        longAnswer: typeof question.longAnswer === "undefined" ? false : !question.longAnswer,
-                                        });
+                                        // updateQuestion(questionIdx, {
+                                        //     longAnswer: typeof question.longAnswer === "undefined" ? false : !question.longAnswer,
+                                        // });
                                     }}
                                 />
                             </div>

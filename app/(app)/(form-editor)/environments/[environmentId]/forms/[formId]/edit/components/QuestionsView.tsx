@@ -42,11 +42,12 @@ export const QuestionsView = ({
         }, {});
     }, [localForm.questions]);
 
-    const updateQuestion = (questionIdx: number) => {
+    const updateQuestion = (questionIdx: number, updatedAttributes: any) => {
         const updatedForm = { ...localForm };
 
         updatedForm.questions[questionIdx] = {
             ...updatedForm.questions[questionIdx],
+            ...updatedAttributes,
         };
 
         setLocalForm(updatedForm)
