@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ZBaseStyling } from "./styling";
 
 export const ZI18nString = z.record(z.string()).refine((obj) => "default" in obj, {
   message: "Object must have a 'default' key",
@@ -147,6 +148,13 @@ export const ZFormInput = z.object({
 
 export type TFormInput = z.infer<typeof ZFormInput>;
 
+
+export const ZFormStyling = ZBaseStyling.extend({
+  overwriteThemeStyling: z.boolean().nullish(),
+});
+
+export type TFormStyling = z.infer<typeof ZFormStyling>;
+
 export const ZForm = z.object({
   id: z.string().cuid2(),
   createdAt: z.date(),
@@ -167,7 +175,7 @@ export const ZForm = z.object({
 //   runOnDate: z.date().nullable(),
 //   closeOnDate: z.date().nullable(),
 //   productOverwrites: ZSurveyProductOverwrites.nullable(),
-//   styling: ZSurveyStyling.nullable(),
+  styling: ZFormStyling.nullable(),
 //   surveyClosedMessage: ZSurveyClosedMessage.nullable(),
 //   segment: ZSegment.nullable(),
 //   singleUse: ZSurveySingleUse.nullable(),
