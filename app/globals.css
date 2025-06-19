@@ -2,9 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
+#fbjs {
+  font-size: 16px;
+}
+
+/* Chrome, Edge, and Safari */
+#fbjs *::-webkit-scrollbar {
+  width: 6px;
+  background: transparent;
+}
+
+#fbjs *::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#fbjs *::-webkit-scrollbar-thumb {
+  background-color: var(--brand-default);
+  border: none;
+  border-radius: 10px;
+}
+
+/* Firefox */
+#fbjs * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--brand-default) transparent;
+}
+
+
 :root {
+  --brand-default: #64748b;
+  --slate-50: rgb(248, 250, 252);
+  --slate-100: rgb(241 245 249);
+  --slate-200: rgb(226 232 240);
+  --slate-300: rgb(203, 213, 225);
+  --slate-400: rgb(148 163 184);
+  --slate-500: rgb(100 116 139);
+  --slate-600: rgb(71 85 105);
+  --slate-700: rgb(51 65 85);
+  --slate-800: rgb(30 41 59);
+  --slate-900: rgb(15 23 42);
+  --gray-100: rgb(243 244 246);
+  --gray-200: rgb(229 231 235);
+  --yellow-100: rgb(254 249 195);
+  --yellow-300: rgb(253 224 71);
+  --yellow-500: rgb(234 179 8);
+
   /* Brand Colors */
-  --formbricks-brand: #038178;
+  --formbricks-brand: #64748b;
+
+  /* background color */
+  --form-background-color: white;
 
   /* Fill Colors */
   --formbricks-fill-primary: #fefefe;
@@ -24,6 +71,10 @@
   /* Functional Colors */
   --formbricks-focus: #1982fc;
   --formbricks-error: #d13a3a;
+
+  --form-subheading-color: var(--slate-700);
+  --form-shadow-color: rgba(0, 0, 0, 0.4);
+
 }
 
 .dark {
@@ -48,6 +99,8 @@
   /* Functional Colors */
   --formbricks-focus: #1982fc;
   --formbricks-error: #d13a3a;
+
+  --form-border-radius: 8px;
 }
 
 @layer base {
@@ -170,4 +223,92 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 
+.no-scrollbar {
+  -ms-overflow-style: none !important; /* Internet Explorer 10+ */
+  scrollbar-width: thin !important; /* Firefox */
+  scrollbar-color: transparent transparent !important; /* Firefox */
 
+  /* Chrome, Edge, and Safari */
+  &::-webkit-scrollbar {
+    width: 0 !important;
+    background: transparent !important;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: transparent !important;
+  }
+}
+
+
+/* editor style */
+.fb-editor-text-bold {
+  font-weight: bold !important;
+}
+
+.fb-editor-text-italic {
+  font-style: italic !important;
+}
+
+.fb-editor-link {
+  text-decoration: underline !important;
+}
+
+.editor-tokenFunction {
+  color: #dd4a68 !important;
+}
+
+.fb-editor-paragraph {
+  margin: 0 !important;
+  position: relative !important;
+}
+
+.fb-editor-paragraph:last-child {
+  margin-bottom: 0 !important;
+}
+
+.fb-editor-heading-h1 {
+  font-size: 25px !important;
+  font-weight: 400 !important;
+  margin-bottom: 20px !important;
+  font-weight: bold !important;
+}
+
+.fb-editor-heading-h2 {
+  font-size: 20px !important;
+  font-weight: bold !important;
+  margin-bottom: 20px !important;
+}
+
+.fb-editor-list-ul {
+  margin-bottom: 12px !important;
+}
+
+.fb-editor-list-ol {
+  margin-bottom: 12px !important;
+}
+
+.fb-editor-listitem {
+  margin: 0px 32px !important;
+}
+
+.fb-editor-nested-listitem {
+  list-style-type: none !important;
+}
+
+.fb-editor-rtl {
+  text-align: right !important;
+}
+
+.fb-editor-ltr {
+  text-align: left !important;
+}
+
+/* this is for styling the HtmlBody component */
+.form-htmlbody {
+  @apply block text-sm font-normal leading-6;
+  /* need to use !important because in packages/ui/components/editor/stylesEditorFrontend.css the color is defined for some classes */
+  color: var(--fb-subheading-color) !important;
+}
+
+.form-shadow {
+  box-shadow: 0px 0px 90px -40px var(--form-shadow-color);
+}
