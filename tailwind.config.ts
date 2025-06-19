@@ -8,7 +8,7 @@ export default {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "../../packages/ui/**/*.{ts,tsx}",
+    "./packages/**/*.{ts,tsx}",
   ],
   theme: {
     extend: {
@@ -38,6 +38,7 @@ export default {
           light: "#00E6CA",
           dark: "#00C4B8",
         },
+        "form-bg": "var(--form-background-color)",
         focus: "var(--formbricks-focus, #1982fc)",
         error: "rgb(from var(--formbricks-error) r g b / <alpha-value>)",
         brandnew: "var(--formbricks-brand, #038178)",
@@ -57,6 +58,9 @@ export default {
           disabled: "var(--formbricks-fill-disabled, #e0e0e0)",
         },
 		  },
+      borderRadius: {
+        custom: "var(--form-border-radius)",
+      },
       keyframes: {
         fadeIn: {
           "0%": { opacity: "0" },
