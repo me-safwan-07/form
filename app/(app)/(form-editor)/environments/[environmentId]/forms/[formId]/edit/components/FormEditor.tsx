@@ -11,6 +11,7 @@ import { FormMenuBar } from "./FormMenuBar";
 import { TEnvironment } from "@/packages/types/environment";
 import { QuestionsAudienceTabs } from "./QuestionsStylingSettingsTabs";
 import { QuestionsView } from "./QuestionsView";
+import { PreviewForm } from "@/packages/ui/PreviewForm";
 
 interface FormEditorProps {
     form: TForm;
@@ -123,6 +124,15 @@ export const FormEditor = ({
                             />
                         )}
                     </main>
+
+                    <aside className="group hidden flex-1 flex-shrink-0 items-center justify-center overflow-hidden border-l border-slate-100 bg-slate-50 py-6 md:flex md:flex-col">
+                        <PreviewForm 
+                            form={localForm}
+                            questionId={activeQuestionId}
+                            product={localProduct}
+                            environment={environment}
+                        />
+                    </aside>
                 </div>
             </div>
         </>

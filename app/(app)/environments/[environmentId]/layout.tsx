@@ -20,7 +20,7 @@ const EnvLayout = async ({ children, params }) => {
             />
             <ToasterClient />
             <EnvironmentLayout environmentId={params.environmentId}>
-                {children}c 
+                {children}
             </EnvironmentLayout>
         </>
     )
