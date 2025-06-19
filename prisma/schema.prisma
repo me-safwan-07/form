@@ -19,6 +19,14 @@ enum IdentityProvider {
   google
 }
 
+enum SurveyStatus {
+  draft
+  scheduled
+  inProgress
+  paused
+  completed
+}
+
 model Account {
   id                String   @id @default(auto()) @map("_id") @db.ObjectId
   createdAt         DateTime @default(now()) @map(name: "created_at")
@@ -53,6 +61,7 @@ model User {
   identityProvider          IdentityProvider @default(email)
   identityProviderAccountId String?
   accounts                  Account[]
+  responseNotes             ResponseNote[]
   memberships               Membership[]
   invitesCreated            Invite[]         @relation("inviteCreatedBy")
   invitesAccepted           Invite[]         @relation("inviteAcceptedBy")
@@ -70,6 +79,8 @@ model Environment {
   product               Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId             String           @db.ObjectId
   forms                 Form[]
+  people                Person[]
+  tags                  Tag[]
 }
 
 model Product {
@@ -99,15 +110,99 @@ model Product {
   @@index([organizationId])
 }
 
-
-enum SurveyStatus {
-  draft
-  scheduled
-  inProgress
-  paused
-  completed
+enum DisplayStatus {
+  seen
+  responded
 }
 
+model Display {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt  DateTime       @default(now()) @map(name: "created_at")
+  updatedAt  DateTime       @updatedAt @map(name: "updated_at")
+  form       Form           @relation(fields: [formId], references: [id], onDelete: Cascade)
+  formId     String         @db.ObjectId
+  person     Person?        @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId   String?        @db.ObjectId
+  responseId String?        @unique
+  status     DisplayStatus?
+
+  @@index([formId])
+  @@index([personId, createdAt])
+}
+
+model Person {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String
+  createdAt     DateTime    @default(now()) @map(name: "created_at")
+  updatedAt     DateTime    @updatedAt @map(name: "updated_at")
+  environment   Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+  environmentId String      @db.ObjectId
+  responses     Response[]
+  // attributes    Attribute[]
+  displays      Display[]
+  // actions       Action[]
+
+  @@unique([environmentId, userId])
+  @@index([environmentId])
+}
+
+model Response {
+  id               String          @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt        DateTime        @default(now()) @map(name: "created_at")
+  updatedAt        DateTime        @updatedAt @map(name: "updated_at")
+  finished         Boolean         @default(false)
+  form             Form            @relation(fields: [formId], references: [id], onDelete: Cascade)
+  formId           String          @db.ObjectId
+  person           Person?         @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId         String?         @db.ObjectId
+  notes            ResponseNote[]
+  /// @zod.custom(imports.ZResponseData)
+  /// [ResponseData]
+  data             Json              @default("{}")
+  /// @zod.custom(imports.ZResponseMeta)
+  /// [ResponseMeta]
+  meta             Json              @default("{}")
+  tags             TagsOnResponses[]
+}
+
+model ResponseNote {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt  DateTime @default(now()) @map(name: "created_at")
+  updatedAt  DateTime @updatedAt @map(name: "updated_at")
+  response   Response @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  responseId String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String   @db.ObjectId
+  text       String
+  isResolved Boolean  @default(false)
+  isEdited   Boolean  @default(false)
+
+  @@index([responseId])
+}
+
+model Tag {
+  id            String            @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt     DateTime          @default(now()) @map(name: "created_at")
+  updatedAt     DateTime          @updatedAt @map(name: "updated_at")
+  name          String
+  responses     TagsOnResponses[]
+  environmentId String            @db.ObjectId
+  environment   Environment       @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+
+  @@unique([environmentId, name])
+  @@index([environmentId])
+}
+
+model TagsOnResponses {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  responseId String   @db.ObjectId
+  response   Response @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  tagId      String   @db.ObjectId
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([responseId, tagId])
+  @@index([responseId])
+}
 
 model Form {
   id                  String          @id @default(auto()) @map("_id") @db.ObjectId
@@ -129,6 +224,26 @@ model Form {
   /// @zod.custom(imports.ZSurveyThankYouCard)
   /// [SurveyThankYouCard]
   thankYouCard        Json                    @default("{\"enabled\": false}")
+  responses            Response[]
+  recontactDays       Int?
+  displayLimit        Int?
+  displays            Display[]
+  autoClose           Int?
+  autoComplete        Int?
+  delay               Int                     @default(0)
+  runOnDate           DateTime?
+  closeOnDate         DateTime?
+  surveyClosedMessage Json?
+
+  /// @zod.custom(imports.ZFormStyling)
+  /// [FormStyling]
+  styling Json?
+
+  verifyEmail        Json?
+  resultShareKey     String?          @unique
+  displayPercentage  Float?
+
+  @@index([environmentId, updatedAt])
 }
 
 model Organization {
