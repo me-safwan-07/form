@@ -6,6 +6,7 @@ import { StackedCardsContainer } from "../wrappers/StackedCardsContainer";
 import { TResponseData } from "@/packages/types/responses";
 import { ThankYouCard } from "./ThankYouCard";
 import { PlayformBranding } from "./PlayFormBranding";
+import { ProgressBar } from "./ProgressBar";
 
 export const Form = ({
     form,
@@ -91,7 +92,7 @@ export const Form = ({
                         isCurrent={offset === 0}
                     />
                 );
-            } else   {
+            } else if (questionIdx === form.questions.length) {
                 return (
                     <ThankYouCard 
                         key="end"
@@ -114,12 +115,13 @@ export const Form = ({
                     className={cn(
                         loadingElement ? "animate-pulse opacity-60" : "",
                         // TODO: fullSizeCards
-                        "my-auto"
+                        // "my-auto"
                     )}>
                     {content()}
                 </div>
                 <div className="mx-6 mb-10 mt-2 space-y-3 md:mb-6 md:mt-6">
                     <PlayformBranding />
+                    <ProgressBar form={form} questionId={questionId} />
                 </div>
             </div>
         );
