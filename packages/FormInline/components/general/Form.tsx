@@ -5,6 +5,7 @@ import { cn } from "@/packages/lib/cn";
 import { StackedCardsContainer } from "../wrappers/StackedCardsContainer";
 import { TResponseData } from "@/packages/types/responses";
 import { ThankYouCard } from "./ThankYouCard";
+import { PlayformBranding } from "./PlayFormBranding";
 
 export const Form = ({
     form,
@@ -117,7 +118,9 @@ export const Form = ({
                     )}>
                     {content()}
                 </div>
-                {/* <div className="m"></div> */}
+                <div className="mx-6 mb-10 mt-2 space-y-3 md:mb-6 md:mt-6">
+                    <PlayformBranding />
+                </div>
             </div>
         );
     };
