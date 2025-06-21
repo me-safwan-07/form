@@ -4,7 +4,7 @@ interface SubmitButtonProps extends HTMLAttributes<HTMLButtonElement> {
   isLastQuestion: boolean;
   focus?: boolean;
   disabled?: boolean;
-  type: 'button' | 'submit' | 'reset';
+  type?: 'button' | 'submit' | 'reset';
   tabIndex?: number;
 }
 
