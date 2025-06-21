@@ -47,6 +47,37 @@
   --yellow-300: rgb(253 224 71);
   --yellow-500: rgb(234 179 8);
 
+  /* Default Light Theme, you can override everything by changing these values */
+
+  --form-brand-color: var(--brand-default);
+  --form-brand-text-color: black;
+  --form-border-color: var(--slate-300);
+  --form-border-color-highlight: var(--slate-500);
+  --form-focus-color: var(--slate-500);
+  --form-heading-color: var(--slate-900);
+  --form-subheading-color: var(--slate-700);
+  --form-placeholder-color: var(--slate-300);
+  --form-info-text-color: var(--slate-500);
+  --form-signature-text-color: var(--slate-400);
+  --form-branding-text-color: var(--slate-500);
+  --form-survey-background-color: white;
+  --form-survey-border-color: var(--slate-50);
+  --form-survey-shadow-color: rgba(0, 0, 0, 0.4);
+  --form-accent-background-color: var(--slate-200);
+  --form-accent-background-color-selected: var(--slate-100);
+  --form-input-background-color: var(--slate-50);
+  --form-input-background-color-selected: var(--slate-200);
+  --form-placeholder-color: var(--slate-400);
+  --form-shadow-color: var(--slate-300);
+  --form-rating-fill: var(--yellow-100);
+  --form-rating-hover: var(--yellow-500);
+  --form-back-btn-border: transparent;
+  --form-submit-btn-border: transparent;
+  --form-rating-selected: black;
+  --form-close-btn-color: var(--slate-500);
+  --form-close-btn-color-hover: var(--slate-700);
+
+
   /* Brand Colors */
   --formbricks-brand: #64748b;
 

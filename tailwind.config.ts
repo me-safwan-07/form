@@ -57,6 +57,11 @@ export default {
           secondary: "var(--formbricks-fill-secondary, #0f172a)",
           disabled: "var(--formbricks-fill-disabled, #e0e0e0)",
         },
+        placeholder: "var(--form-placeholder-color)",
+        subheading: "var(--form-subheading-color)",
+        "input-bg": "var(--form-input-background-color)",
+        "form-border": "var(--form-border-color)",
+        "border-highlight": "var(--form-border-color-highlight)",
 		  },
       borderRadius: {
         custom: "var(--form-border-radius)",
