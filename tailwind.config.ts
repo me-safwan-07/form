@@ -5,10 +5,13 @@ import typography from "@tailwindcss/typography";
 
 export default {
   content: [
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./packages/**/*.{ts,tsx}",
+    "./packages/ui/**/*.{js,ts,jsx,tsx,mdx}",
+    "./packages/email/**/*.{js,ts,jsx,tsx,mdx}",
+    "./packages/FormInline/**/*.{js,ts,jsx,tsx,mdx}",
+    "./packages/**/*.{ts,tsx}", // keep this for any other loose files
   ],
   theme: {
     extend: {
