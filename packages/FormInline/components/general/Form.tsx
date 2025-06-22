@@ -7,6 +7,7 @@ import { TResponseData } from "@/packages/types/responses";
 import { ThankYouCard } from "./ThankYouCard";
 import { PlayformBranding } from "./PlayFormBranding";
 import { ProgressBar } from "./ProgressBar";
+import { QuestionConditional } from "./QuestionConditional";
 
 export const Form = ({
     form,
@@ -100,6 +101,27 @@ export const Form = ({
                         buttonLink={form.thankYouCard.buttonLink}
                     />
                 )
+            } else {
+                const question = form.questions[questionIdx];
+                return (
+                    <QuestionConditional
+                        key={question.id}
+                        question={question}
+                        value={responseData[question.id] || ""}
+                        onChange={onChange}
+                        onSubmit={onSubmit}
+                        onBack={() => {
+                            const newHistory = [...history];
+                            newHistory.pop();
+                            setHistory(newHistory);
+                            setQuestionId(newHistory[newHistory.length - 1] || "start");
+                        }}
+                        isFirstQuestion={questionIdx === 0}
+                        isLastQuestion={questionIdx === form.questions.length - 1}
+                        // autoFocus={false}
+                        currentQuestionId={questionId}
+                    />
+                );
             }
         };
 
