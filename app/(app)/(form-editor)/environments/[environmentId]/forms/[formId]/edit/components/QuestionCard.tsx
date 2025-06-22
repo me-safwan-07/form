@@ -97,7 +97,7 @@ export const QuestionCard = ({
                             {/* </div> */}
                             <div className="grow" dir="auto">
                                 <p className="text-sm font-semibold">
-                                    {question.headline.default}
+                                    { question.headline["default"] }
                                 </p>
                                 {!open && question?.required && (
                                     <p className="mt-1 truncate text-xs text-slate-500">{question?.required && "Required"}</p>

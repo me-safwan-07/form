@@ -54,6 +54,8 @@ export const QuestionsView = ({
     };
 
     const deleteQuestion = (questionIdx: number) => {
+        console.log("Deleting question at index:", questionIdx);
+        console.log("Current questions:", localForm.questions[questionIdx]);
         const questionId = localForm.questions[questionIdx].id;
         const activeQuestionIdTemp = activeQuestionId ?? localForm.questions[0].id;
         const updatedForm: TForm = { ...localForm };
