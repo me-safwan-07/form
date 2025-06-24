@@ -217,3 +217,15 @@ export type TFormFilters = z.infer<typeof ZFormFilters>;
 
 
 export type TFormOpenTextQuestionInputType = z.infer<typeof ZFormOpenTextQuestionInputType>;
+
+
+export const ZFormClosedMessage = z
+  .object({
+    enabled: z.boolean().optional(),
+    heading: z.string().optional(),
+    subheading: z.string().optional(),
+  })
+  .nullable()
+  .optional();
+  
+export type TFormClosedMessage = z.infer<typeof ZFormClosedMessage>;
