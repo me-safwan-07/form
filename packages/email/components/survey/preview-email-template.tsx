@@ -12,14 +12,14 @@ import {
 import { render } from "@react-email/render";
 import { CalendarDaysIcon } from "lucide-react";
 import React from "react";
-import { cn } from "@formbricks/lib/cn";
 import { getLocalizedValue } from "@formbricks/lib/i18n/utils";
-import { COLOR_DEFAULTS } from "@formbricks/lib/styling/constants";
 import { isLight, mixColor } from "@formbricks/lib/utils/colors";
 import type { TSurvey, TSurveyStyling } from "@formbricks/types/surveys";
 import { TSurveyQuestionTypeEnum } from "@formbricks/types/surveys";
 import { RatingSmiley } from "@formbricks/ui/RatingSmiley";
 import { getNPSOptionColor, getRatingNumberOptionColor } from "../../utils";
+import { COLOR_DEFAULTS } from "@/packages/lib/styling/constants";
+import { cn } from "@/packages/lib/cn";
 
 interface PreviewEmailTemplateProps {
   survey: TSurvey;
