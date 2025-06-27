@@ -1,7 +1,9 @@
 import { FormInline } from "@/packages/FormInline";
 import { TForm } from "@/packages/types/forms"
 import { TProduct } from "@/packages/types/product";
+import { set } from "lodash";
 import { useSearchParams } from "next/navigation";
+import { useMemo, useState } from "react";
 
 
 let setIsError = (_: boolean) => {};
@@ -24,7 +26,21 @@ export const LinkForm = ({
     const isPreview = searchParams?.get("preview") === "true";
 
     const startAt = searchParams?.get("startAt");
+    const isStartAtValid = useMemo(() => {
+        if (!startAt) return false;
+        if (form?.welcomeCard.enabled && startAt === "start") return true;
 
+        const isValid = form?.questions.some((question) => question.id === startAt);
+
+        // To remove startAt query param from URL if it is not valid:
+        if (!isValid && typeof window !== "undefined") {
+            const url = new URL(window.location.href);
+            url.searchParams.delete("startAt");
+            window.history.replaceState({}, "", url.toString());
+        }
+
+        return isValid;
+    }, [form, startAt]);
     
     const determineStyling = () => {
         // allow style overwrite is disabled from the product
@@ -45,6 +61,8 @@ export const LinkForm = ({
 
         return product.styling;
     };
+    const [autoFocus, setAutofocus] = useState(false);
+
 
     <FormInline 
         form={form}
@@ -57,6 +75,10 @@ export const LinkForm = ({
         setQuestionId={setQuestionId}
         determineStyling={determineStyling}
         webAppUrl={webAppUrl}
-        startAtQuestionId={startAt}
+        autoFocus={autoFocus}
+        getSetQuestionId={(f: (value: string) => void) => {
+            setQuestionId = f;
+        }}
+        startAtQuestionId={startAt && isStartAtValid ? startAt : undefined}
     />
 }
