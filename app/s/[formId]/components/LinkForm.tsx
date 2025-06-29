@@ -1,6 +1,9 @@
 import { FormInline } from "@/packages/FormInline";
+import { FormState } from "@/packages/lib/formState";
+import { ResponseQueue } from "@/packages/lib/responseQueue";
 import { TForm } from "@/packages/types/forms"
 import { TProduct } from "@/packages/types/product";
+import { TResponse, TResponseData, TResponseUpdate } from "@/packages/types/responses";
 import { set } from "lodash";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -14,14 +17,19 @@ let setQuestionId = (_: string) => {};
 interface LinkFormProps {
     form: TForm;
     product: TProduct;
+    userId?: string;
     webAppUrl: string;
+    signleUseResponse?: TResponse;
 }
 
 export const LinkForm = ({
     form,
     product,
+    userId,
     webAppUrl,
+    signleUseResponse,
 }: LinkFormProps) => {
+    const responseId = signleUseResponse?.id;
     const searchParams = useSearchParams();
     const isPreview = searchParams?.get("preview") === "true";
 
@@ -63,6 +71,31 @@ export const LinkForm = ({
     };
     const [autoFocus, setAutofocus] = useState(false);
 
+    // pass in the responseId if the form is a single  use form, ensures form state is updated with the responseId
+    let formState = useMemo(() => {
+        return new FormState(form.id, responseId, userId);
+    }, [form.id, responseId, userId]);
+    
+    const responseQueue = useMemo(
+        () => 
+            new ResponseQueue(
+                {
+                    apiHost: webAppUrl,
+                    environmentId: form.environmentId,
+                    retryAttempts: 2,
+                    onResponseSendingFailed: () => {
+                        setIsError(true);
+                    },
+                    onResponseSendingFinished: () => {
+                        // when response is current question is processed successfully
+                        setIsResponseSendingFinished(true);
+                    }
+                },
+                formState,
+            ),
+        [webAppUrl, form.environmentId, formState]        
+    );
+
 
     <FormInline 
         form={form}
@@ -80,5 +113,9 @@ export const LinkForm = ({
             setQuestionId = f;
         }}
         startAtQuestionId={startAt && isStartAtValid ? startAt : undefined}
+        onResponse={(responseUpdate: TResponseUpdate) => {
+            !isPreview &&
+                res   
+        }}
     />
 }
