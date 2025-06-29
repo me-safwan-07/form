@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { ZId } from "./environment";
+import { finished } from "stream";
 
 export const ZResponseDataValue = z.union([
   z.string(),
@@ -37,3 +39,42 @@ export const ZResponseUpdate = z.object({
 });
 
 export type TResponseUpdate = z.infer<typeof ZResponseUpdate>;
+
+export const ZResponsePerson = z.object({
+  id: ZId,
+  userId: z.string(),
+});
+
+
+export const ZResponse = z.object({
+  id: z.string().cuid2(),
+  createAt: z.date(),
+  updatedAt: z.date(),
+  formId: z.string().cuid2(),
+  person: ZResponsePerson.nullable(),
+  finished: z.boolean(),
+  data: ZResponseData,
+});
+
+export type TResponse = z.infer<typeof ZResponse>;
+
+export const ZResponseInput = z.object({
+  createAt: z.coerce.date().optional(),
+  updateAt: z.coerce.date().optional(),
+  environmentId: z.string().cuid2(),
+  formId: z.string().cuid2(),
+  userId: z.string().nullish(),
+  finished: z.boolean(),
+  data: ZResponseData,
+});
+
+export type TResponseInput = z.infer<typeof ZResponseInput>;
+
+export const ZResponseUpdateInput = z.object({
+  finished: z.boolean(),
+  data: ZResponseData,
+});
+
+export type TResponseUpdateInput = z.infer<typeof ZResponseUpdateInput>;
+
+
