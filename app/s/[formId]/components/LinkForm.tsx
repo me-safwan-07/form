@@ -1,3 +1,4 @@
+import { PlayerFormAPI } from "@/packages/api";
 import { FormInline } from "@/packages/FormInline";
 import { FormState } from "@/packages/lib/formState";
 import { ResponseQueue } from "@/packages/lib/responseQueue";
@@ -100,22 +101,58 @@ export const LinkForm = ({
     <FormInline 
         form={form}
         styling={determineStyling()}
-        // isBrandingEnabled={product.
+        // shouldResetQuestionId={false}
         getSetIsError={(f: (value: boolean) => void) => {
             setIsError = f;
         }}
-        isPreview={isPreview}
-        setQuestionId={setQuestionId}
-        determineStyling={determineStyling}
-        webAppUrl={webAppUrl}
+        getSetIsResponseSendingFinished={
+            !isPreview
+                ? (f: (value: boolean) => void) => {
+                    setIsResponseSendingFinished = f;
+                }
+                : undefined
+        }
+        onRetry={() => {
+            setIsError(false);
+            responseQueue.processQueue();
+        }}
+        onDisplay={async () => {
+            if (!isPreview) {
+                const api = new PlayerFormAPI({
+                    apiHost: webAppUrl,
+                    environmentId: form.environmentId,
+                });
+                const res = await api.client.display.create({
+                    formId: form.id,
+                });
+                if (!res.ok) {
+                    throw new Error("Could not create display");
+                }
+                const { id } = res.data;
+
+                formState.updateDisplayId(id);
+                responseQueue.updateFormState(formState);
+            }
+        }}
+        onResponse={(responseUpdate: TResponseUpdate) => {
+            return (
+                !isPreview &&
+                responseQueue.add({
+                    data: {
+                        ...responseUpdate.data,
+                    },
+                    finished: responseUpdate.finished,
+                })
+            );
+        }}
+        // TODO: add the onFileUpload props
         autoFocus={autoFocus}
         getSetQuestionId={(f: (value: string) => void) => {
             setQuestionId = f;
         }}
         startAtQuestionId={startAt && isStartAtValid ? startAt : undefined}
-        onResponse={(responseUpdate: TResponseUpdate) => {
-            !isPreview &&
-                res   
-        }}
+        setQuestionId={setQuestionId}
+        determineStyling={determineStyling}
+        webAppUrl={webAppUrl}
     />
 }
