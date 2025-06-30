@@ -1,6 +1,7 @@
 import { useCallback, HTMLAttributes } from "react";
 
 interface SubmitButtonProps extends HTMLAttributes<HTMLButtonElement> {
+  buttonLabel: string | undefined,
   isLastQuestion: boolean;
   focus?: boolean;
   disabled?: boolean;
@@ -9,7 +10,7 @@ interface SubmitButtonProps extends HTMLAttributes<HTMLButtonElement> {
 }
 
 export const SubmitButton = ({
-  // buttonLabel,
+  buttonLabel,
   isLastQuestion,
   tabIndex = 1,
   focus = false,
@@ -40,7 +41,7 @@ export const SubmitButton = ({
       className="border-transparent text-black focus:bg-slate-500 rounded-custom flex items-center border px-3 py-3 text-base font-medium leading-4 shadow-sm hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2"
       onClick={onClick}
       disabled={disabled}>
-      {isLastQuestion ? "Finish" : "Next"}
+      {buttonLabel || (isLastQuestion ? "Finish" : "Next")}
     </button>
   );
 };

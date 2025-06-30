@@ -8,7 +8,7 @@ import { cn } from "@/packages/lib/cn";
 import { TForm, TFormStyling } from "@/packages/types/forms";
 import { TProductStyling } from "@/packages/types/product";
 import { TCardArrangementOptions } from "@/packages/types/styling"
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface StackedCardsContainerProps {
     cardArrangement: TCardArrangementOptions;
@@ -17,6 +17,7 @@ interface StackedCardsContainerProps {
     getCardContent: (questionIdxTemp: number, offset: number) => JSX.Element | undefined;
     styling: TProductStyling | TFormStyling;
     setQuestionId: (questionId: string) => void;
+    shouldResetQuestionId?: boolean;
 }
 
 export const StackedCardsContainer = ({
@@ -26,12 +27,14 @@ export const StackedCardsContainer = ({
     getCardContent,
     styling,
     setQuestionId,
+    shouldResetQuestionId = true,
 }: StackedCardsContainerProps) => {
     const [hovered, setHovered] = useState(false);
     const highlightBorderColor = 
         form.styling?.highlightBorderColor?.light || styling.highlightBorderColor?.light;
     const cardBorderColor = form.styling?.cardBorderColor?.light || styling.cardBorderColor?.light;
     const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+    const resizeObserver = useRef<ResizeObserver | null>(null);
     const [cardHeight, setCardHeight] = useState("auto");
     const [cardWidth, setCardWidth] = useState<number>(0);
 
@@ -85,6 +88,38 @@ export const StackedCardsContainer = ({
         }
     };
 
+    // UseEffect to handle the resize of current question card and set cardHeight accodingly
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            const currentElement = cardRefs.current[questionIdxTemp];
+            if (currentElement) {
+                if (resizeObserver.current) {
+                    resizeObserver.current.disconnect();
+                }
+                resizeObserver.current = new ResizeObserver((entries) => {
+                    for (const entry of entries) {
+                        setCardHeight(entry.contentRect.height + "px");
+                        setCardWidth(entry.contentRect.width);
+                    }
+                });
+                resizeObserver.current.observe(currentElement);
+            }
+        }, 0);
+        return () => {
+            resizeObserver.current?.disconnect();
+            clearTimeout(timer);
+        };
+    }, [questionIdxTemp, cardArrangement, cardRefs]);
+
+    // Reset question progress, when card arrangement changes
+    useEffect(() => {
+        if (shouldResetQuestionId) {
+            setQuestionId(form.welcomeCard.enabled ? "start" : form?.questions[0]?.id);
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [cardArrangement]);
+    
     const getCardHeight = (offset: number): string => {
         // Take default height depending upon card content
         if (offset === 0) return "auto";

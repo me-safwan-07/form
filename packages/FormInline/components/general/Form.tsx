@@ -8,23 +8,44 @@ import { ThankYouCard } from "./ThankYouCard";
 import { PlayformBranding } from "./PlayFormBranding";
 import { ProgressBar } from "./ProgressBar";
 import { QuestionConditional } from "./QuestionConditional";
+import { ResponseErrorComponent } from "./ResponseErrorComponent";
 
 export const Form = ({
     form,
     styling,
-    
+    onDisplay = () => {},
+    onResponse = () => {},
+    onClose = () => {},
+    onFinished = () => {},
+    onRetry = () => {},
+    getSetIsError,
+    getSetIsResponseSendingFinished,
+    getSetQuestionId,
+    // TODO: add the onFileUpload props
+    startAtQuestionId,
+    shouldResetQuestionId,
+    autoFocus,
 }: FormBaseProps) => {
+    const autoFocusEnabled = autoFocus !== undefined ? autoFocus : window.self === window.top;
+    
     const [questionId, setQuestionId] = useState(() => {
-        if (form.welcomeCard.enabled) {
+        if (startAtQuestionId) {
+            return startAtQuestionId;
+        } else if (form.welcomeCard.enabled) {
             return "start";
         } else {
             return form?.questions[0]?.id;
         }
     });
     const [showError, setShowError] = useState(false);
+    // flag state to store whether response processing has been completed or not, we ignore this check for form editor preview and link form preview where getSetIsResponseSendingFinished is undefined
+    const [isResponseSendingFinished, setIsResponseSendingFinished] = useState(
+        getSetIsResponseSendingFinished ? false : true
+    );
     const [loadingElement, setLoadingElement] = useState(false);
     const [history, setHistory] = useState<string[]>([]);
     const [responseData, setResponseData] = useState<TResponseData>({});
+    // TODO: 
     const cardArrangement = styling.cardArrangement?.linkSurveys ?? "straight";
     
     const currentQuestionIndex = form.questions.findIndex((q) => q.id === questionId);
@@ -38,7 +59,8 @@ export const Form = ({
         }
     }, [questionId, form, history]);
     const contentRef = useRef<HTMLDivElement | null>(null);
-    const showProgressBar = !styling.hideProgressBar;
+    // const showProgressBar = !styling.hideProgressBar;
+
 
     useEffect(() => {
         // scroll to top when question changes
@@ -46,6 +68,37 @@ export const Form = ({
             contentRef.current.scrollTop = 0;
         }
     }, [questionId]);
+
+    useEffect(() => {
+        // call onDisplay when compounent is mounted
+        onDisplay();
+        
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        if (getSetIsError) {
+            getSetIsError((value: boolean) => {
+                setShowError(value);
+            });
+        }
+    }, [getSetIsError]);
+
+    useEffect(() => {
+        if (getSetQuestionId) {
+            getSetQuestionId((value: string) => {
+                setQuestionId(value);
+            });
+        }
+    }, [getSetQuestionId]);
+
+    useEffect(() => {
+        if (getSetIsResponseSendingFinished) {
+            getSetIsResponseSendingFinished((value: boolean) => {
+                setIsResponseSendingFinished(value);
+            });
+        }
+    }, [getSetIsResponseSendingFinished]);
 
     let currIdxTemp = currentQuestionIndex;
     let currQuesTemp = currentQuestion;
@@ -70,16 +123,40 @@ export const Form = ({
         const questionId = Object.keys(responseData)[0];
         setLoadingElement(true);
         const nextQuestionId = getNextQuestionId(responseData);
-        // const finished = nextQuestionId === "end";
+        const finished = nextQuestionId === "end";
         onChange(responseData);
-        // TODO: add onResponse functionlity
+        onResponse({ data: responseData, finished });
+        if (finished) {
+            onFinished();
+        }
         setQuestionId(nextQuestionId);
         // add to history
         setHistory([...history, questionId]);
         setLoadingElement(false);
     };
 
+    const onBack = (): void => {
+        let prevQuestionId;
+        // use history if available
+        if (history?.length > 0) {
+            const newHistory = [...history];
+            prevQuestionId = newHistory.pop();
+            setHistory(newHistory);
+        } else {
+            // otherwise go back to previous question is array
+            prevQuestionId = form.questions[currIdxTemp - 1]?.id;
+        }
+        if (!prevQuestionId) throw new Error("Question not found");
+        setQuestionId(prevQuestionId);
+    };
+
     const getCardContent = (questionIdx: number, offset: number): JSX.Element | undefined => {
+        if (showError) {
+            return (
+                <ResponseErrorComponent responseData={responseData} questions={form.questions} onRetry={onRetry} />
+            );
+        }
+
         const content = () => {
             if (questionIdx === -1) {
                 return (
@@ -136,8 +213,6 @@ export const Form = ({
                     ref={contentRef}
                     className={cn(
                         loadingElement ? "animate-pulse opacity-60" : "",
-                        // TODO: fullSizeCards
-                        // "my-auto"
                     )}>
                     {content()}
                 </div>
@@ -158,6 +233,7 @@ export const Form = ({
                 form={form}
                 styling={styling}
                 setQuestionId={setQuestionId}
+                shouldResetQuestionId={shouldResetQuestionId}
             />
         </>
     )
