@@ -97,62 +97,63 @@ export const LinkForm = ({
         [webAppUrl, form.environmentId, formState]        
     );
 
-
-    <FormInline 
-        form={form}
-        styling={determineStyling()}
-        // shouldResetQuestionId={false}
-        getSetIsError={(f: (value: boolean) => void) => {
-            setIsError = f;
-        }}
-        getSetIsResponseSendingFinished={
-            !isPreview
+    return (
+        <FormInline 
+            form={form}
+            styling={determineStyling()}
+            // shouldResetQuestionId={false}
+            getSetIsError={(f: (value: boolean) => void) => {
+                setIsError = f;
+            }}
+            getSetIsResponseSendingFinished={
+                !isPreview
                 ? (f: (value: boolean) => void) => {
                     setIsResponseSendingFinished = f;
                 }
                 : undefined
-        }
-        onRetry={() => {
-            setIsError(false);
-            responseQueue.processQueue();
-        }}
-        onDisplay={async () => {
-            if (!isPreview) {
-                const api = new PlayerFormAPI({
-                    apiHost: webAppUrl,
-                    environmentId: form.environmentId,
-                });
-                const res = await api.client.display.create({
-                    formId: form.id,
-                });
-                if (!res.ok) {
-                    throw new Error("Could not create display");
-                }
-                const { id } = res.data;
-
-                formState.updateDisplayId(id);
-                responseQueue.updateFormState(formState);
             }
-        }}
-        onResponse={(responseUpdate: TResponseUpdate) => {
-            return (
-                !isPreview &&
-                responseQueue.add({
-                    data: {
-                        ...responseUpdate.data,
-                    },
-                    finished: responseUpdate.finished,
-                })
-            );
-        }}
-        // TODO: add the onFileUpload props
-        autoFocus={autoFocus}
-        getSetQuestionId={(f: (value: string) => void) => {
-            setQuestionId = f;
-        }}
-        startAtQuestionId={startAt && isStartAtValid ? startAt : undefined}
-        setQuestionId={setQuestionId}
-        determineStyling={determineStyling}
-        webAppUrl={webAppUrl}
-    />
+            onRetry={() => {
+                setIsError(false);
+                responseQueue.processQueue();
+            }}
+            onDisplay={async () => {
+                if (!isPreview) {
+                    const api = new PlayerFormAPI({
+                        apiHost: webAppUrl,
+                        environmentId: form.environmentId,
+                    });
+                    const res = await api.client.display.create({
+                        formId: form.id,
+                    });
+                    if (!res.ok) {
+                        throw new Error("Could not create display");
+                    }
+                    const { id } = res.data;
+                    
+                    formState.updateDisplayId(id);
+                    responseQueue.updateFormState(formState);
+                }
+            }}
+            onResponse={(responseUpdate: TResponseUpdate) => {
+                return (
+                    !isPreview &&
+                    responseQueue.add({
+                        data: {
+                            ...responseUpdate.data,
+                        },
+                        finished: responseUpdate.finished,
+                    })
+                );
+            }}
+            // TODO: add the onFileUpload props
+            autoFocus={autoFocus}
+            getSetQuestionId={(f: (value: string) => void) => {
+                setQuestionId = f;
+            }}
+            startAtQuestionId={startAt && isStartAtValid ? startAt : undefined}
+            setQuestionId={setQuestionId}
+            determineStyling={determineStyling}
+            webAppUrl={webAppUrl}
+        />
+    )
 }
