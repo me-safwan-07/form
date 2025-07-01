@@ -26,7 +26,7 @@ export const responseCache = {
       return `forms-${surveyId}-responses`;
     },
   },
-  revalidate({ environmentId, personId, id, singleUseId, surveyId }: RevalidateProps): void {
+  revalidate({ environmentId, personId, id, singleUseId, formId }: RevalidateProps): void {
     if (id) {
       revalidateTag(this.tag.byId(id));
     }
@@ -35,16 +35,16 @@ export const responseCache = {
       revalidateTag(this.tag.byPersonId(personId));
     }
 
-    if (surveyId) {
-      revalidateTag(this.tag.byFormId(surveyId));
+    if (formId) {
+      revalidateTag(this.tag.byFormId(formId));
     }
 
     if (environmentId) {
       revalidateTag(this.tag.byEnvironmentId(environmentId));
     }
 
-    if (surveyId && singleUseId) {
-      revalidateTag(this.tag.bySingleUseId(surveyId, singleUseId));
+    if (formId && singleUseId) {
+      revalidateTag(this.tag.bySingleUseId(formId, singleUseId));
     }
   },
 };
