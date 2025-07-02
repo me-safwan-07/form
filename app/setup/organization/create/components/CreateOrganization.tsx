@@ -52,7 +52,7 @@ export const CreateOrganization = () => {
             setIsSubmitting(true);
             const organizationName = data.name.trim();
             console.log("Creating organization with name:", organizationName);
-            const product = await createOrganizationAction(organizationName);
+            const product = await createOrganizationAction();
 
             const productionEnvironment = product.environments[0];
             router.push(`/environments/${productionEnvironment.id}/forms`);

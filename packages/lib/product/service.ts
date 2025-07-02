@@ -15,7 +15,7 @@ const selectProduct = {
   id: true,
   createdAt: true,
   updatedAt: true,
-  name: true,
+  // name: true,
   organizationId: true,
   darkOverlay: true,
   environments: true,
@@ -35,6 +35,7 @@ export const getProducts = (organizationId: string, page?:number): Promise<TProd
           },
           select: selectProduct,
         });
+        console.log("Prisma product", products)
 
         return products;
       } catch (error) {
@@ -167,18 +168,13 @@ export const createProduct = async (
 ): Promise<TProduct> => {
   validateInputs([organizationId, ZString],[productInput, ZProductUpdateInput.partial()]);
 
-  if (!productInput.name) {
-    throw new Error("Product Name is required");
-  }
-
   const { environments, ...data } = productInput;
-
 
   try {
     const product = await prisma.product.create({
       data: {
         ...data,
-        name: productInput.name,
+        // name: productInput.name,
         organizationId,
       },
       select: selectProduct,

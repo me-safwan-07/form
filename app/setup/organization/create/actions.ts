@@ -10,13 +10,11 @@ import { AuthorizationError } from "@/packages/types/errors";
 import { TProduct } from "@/packages/types/product";
 import { getServerSession } from "next-auth";
 
-export const createOrganizationAction = async (organizationName: string):Promise<TProduct> => {
+export const createOrganizationAction = async ():Promise<TProduct> => {
     const session = await getServerSession(authOptions);
     if (!session) throw new AuthorizationError("Not authenticated");
 
-    const newOrganization = await createOrganization({
-        name: organizationName,
-    });
+    const newOrganization = await createOrganization();
 
     await createMembership(newOrganization.id, session.user.id, {
         role: "owner",
@@ -24,7 +22,7 @@ export const createOrganizationAction = async (organizationName: string):Promise
     });
 
     const newProduct = await createProduct(newOrganization.id, {
-        name: "Form Name",
+        // name: "Form Name",
         styling: {
             allowStyleOverwrite: true,
             brandColor: { light: DEFAULT_BRAND_COLOR }

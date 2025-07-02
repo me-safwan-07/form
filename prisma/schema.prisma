@@ -87,7 +87,7 @@ model Product {
   id                   String          @id @default(auto()) @map("_id") @db.ObjectId
   createdAt            DateTime        @default(now()) @map(name: "created_at")
   updatedAt            DateTime        @updatedAt @map(name: "updated_at")
-  name                 String
+  // name                 String
   organization         Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId       String          @db.ObjectId
   environments         Environment[]
@@ -106,8 +106,8 @@ model Product {
   /// [Logo]
   logo                 Json?
 
-  @@unique([organizationId, name])
-  @@index([organizationId])
+  @@unique([organizationId])
+  // @@index([organizationId])
 }
 
 enum DisplayStatus {
@@ -250,7 +250,7 @@ model Organization {
   id          String       @id @default(auto()) @map("_id") @db.ObjectId
   createdAt   DateTime     @default(now()) @map(name: "created_at")
   updatedAt   DateTime     @updatedAt @map(name: "updated_at")
-  name        String
+  // name        String
   memberships Membership[]
   products    Product[]
   /// @zod.custom(imports.ZTeamBilling)

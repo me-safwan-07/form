@@ -12,7 +12,7 @@ export const select = {
   id: true,
   createdAt: true,
   updatedAt: true,
-  name: true,
+  // name: true,
   billing: true,
 };
 
@@ -37,7 +37,7 @@ export const getOrganizationsByUserId = (userId: string, page?: number): Promise
         if (!organizations) {
           throw new ResourceNotFoundError("Organizations by UserId", userId);
         }
-        return organizations as [];
+        return organizations as [] || [];
       } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
           throw new DatabaseError(error.message);
@@ -80,15 +80,13 @@ export const getOrganization = (organizationId: string): Promise<TOrganization |
     }
   )();
 
-export const createOrganization = async (
-    organizationInput: TOrganizationCreateInput
-): Promise<TOrganization> => {
+export const createOrganization = async (): Promise<TOrganization> => {
     try {
-        validateInputs([organizationInput, ZOrganizationCreateInput]);
+        // validateInputs([organizationInput, ZOrganizationCreateInput]);
 
         const organization = await prisma.organization.create({
             data: {
-                ...organizationInput,
+                // name: "",
                 billing: {
                     plan: PRODUCT_FEATURE_KEYS.FREE,
                     limits: {

@@ -40,7 +40,6 @@ export const ProductSettings = ({
 
     const form = useForm<TProductUpdateInput>({
         defaultValues: {
-            name: '',
             styling: { allowStyleOverwrite: true, brandColor: { light: defaultBrandColor } },
         },
         resolver: zodResolver(ZProductUpdateInput),

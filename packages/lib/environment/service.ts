@@ -85,17 +85,21 @@ export const getEnvironments = (productId: string): Promise<TEnvironment[]> =>
 export const getFirstEnvironmentByUserId = async (userId: string): Promise<TEnvironment | null> => {
     try {
         const organizations = await getOrganizationsByUserId(userId);
-        if (organizations.length === 0) {
+        
+        if (!organizations && organizations.length === 0) {
             throw new Error(`Unable to get first environment: User ${userId} has no organizations`);
         }
         const firstOrganization = organizations[0];
         const products = await getProducts(firstOrganization.id);
-        if (products.length === 0) {
+        console.log(products);
+        if (!products && products.length === 0) {
             throw new Error(
                 `Unable to get first environment: Organization ${firstOrganization.id} has no products`
             );
-        }
-        return products;
+        };
+        const firstProduct = products[0];
+
+        return firstProduct;
     } catch (error) {
         throw error;
     }
