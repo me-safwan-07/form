@@ -5,6 +5,8 @@ import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 import { CreateOrganization } from "./components/CreateOrganization";
 import { Metadata } from "next";
+import { getOrganizationsByUserId } from "@/packages/lib/organization/service";
+import { RemovedFromOrganization } from "./components/RemovedFromOrganization";
 
 export const metadata: Metadata = {
   title: "Create Organization",
@@ -16,13 +18,17 @@ const Page = async () => {
 
   if (!session) throw new AuthenticationError("Not Authenticated");
 
-  // const hasNoOrganizations = await gethasNoOrganizations();
-
-  // if (hasNoOrganizations) {
+  const hasNoOrganizations = await gethasNoOrganizations();
+  const userOrganizations = await getOrganizationsByUserId(session.user.id);
+  if (!hasNoOrganizations) {
      return <CreateOrganization />
-  // }
+  }
 
-  // return notFound();
+  if (hasNoOrganizations ) {
+    return <RemovedFromOrganization session={session} />
+  }
+
+  return notFound();
 }
 
 export default Page;
