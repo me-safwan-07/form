@@ -35,10 +35,7 @@ export const ZOrganization = z.object({
   id: z.string().cuid2(),
   createdAt: z.date(),
   updatedAt: z.date(),
-  name: z.string({ message: "Organization name is required" }).trim().min(1, {
-    message: "Organization name must be at least 1 character long",
-  }),
-  billing: ZOrganizationBilling,
+  // billing: ZOrganizationBilling,
 });
 
 export const ZOrganizationCreateInput = z.object({
