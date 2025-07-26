@@ -1,133 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  // output   = "../node_modules/@prisma/client"
 }
 
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
-}
-
-enum IdentityProvider {
-  email
-  google
-}
-
-enum SurveyStatus {
-  draft
-  scheduled
-  inProgress
-  paused
-  completed
-}
-
-model Account {
-  id                String   @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt         DateTime @default(now()) @map(name: "created_at")
-  updatedAt         DateTime @updatedAt @map(name: "updated_at")
-  user              User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId            String   @db.ObjectId
-  type              String
-  provider          String
-  providerAccountId String
-  access_token      String?  @db.String
-  refresh_token     String?  @db.String
-  expires_at        Int?
-  ext_expires_in    Int?
-  token_type        String?
-  scope             String?
-  id_token          String?  @db.String
-  session_state     String?
-
-  @@unique([provider, providerAccountId])
-  @@index([userId])
-}
-
-model User {
-  id                        String           @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt                 DateTime         @default(now()) @map(name: "created_at")
-  updatedAt                 DateTime         @updatedAt @map(name: "updated_at")
-  name                      String
-  email                     String           @unique
-  emailVerified             DateTime?        @map(name: "email_verified")
-  imageUrl                  String?
-  password                  String?
-  identityProvider          IdentityProvider @default(email)
-  identityProviderAccountId String?
-  accounts                  Account[]
-  responseNotes             ResponseNote[]
-  memberships               Membership[]
-  invitesCreated            Invite[]         @relation("inviteCreatedBy")
-  invitesAccepted           Invite[]         @relation("inviteAcceptedBy")
-  /// @zod.custom(imports.ZUserNotificationSettings)
-  /// @zod.custom(imports.ZUserNotificationSettings)
-  /// [UserNotificationSettings]
-  notificationSettings      Json             @default("{}")
-  forms                     Form[]
-}
-
-model Environment {
-  id                    String           @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt             DateTime         @default(now()) @map(name: "created_at")
-  updatedAt             DateTime         @updatedAt @map(name: "updated_at")
-  product               Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId             String           @db.ObjectId
-  forms                 Form[]
-  people                Person[]
-  tags                  Tag[]
-}
-
-model Product {
-  id                   String          @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt            DateTime        @default(now()) @map(name: "created_at")
-  updatedAt            DateTime        @updatedAt @map(name: "updated_at")
-  // name                 String
-  organization         Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  organizationId       String          @db.ObjectId
-  environments         Environment[]
-  brandColor           String? // deprecated; use styling.brandColor instead
-  highlightBorderColor String? // deprecated
-  /// @zod.custom(imports.ZProductStyling)
-  /// [Styling]
-  styling              Json            @default("{\"allowStyleOverwrite\":true}")
-  /// @zod.custom(imports.ZProductConfig)
-  /// [ProductConfig]
-  // config               Json            @default("{}")
-  // recontactDays        Int             @default(7)
-  // clickOutsideClose    Boolean         @default(true)
-  darkOverlay          Boolean         @default(false)
-  /// @zod.custom(imports.ZLogo)
-  /// [Logo]
-  logo                 Json?
-
-  @@unique([organizationId])
-  // @@index([organizationId])
-}
-
-enum DisplayStatus {
-  seen
-  responded
-}
-
-model Display {
-  id            String      @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt  DateTime       @default(now()) @map(name: "created_at")
-  updatedAt  DateTime       @updatedAt @map(name: "updated_at")
-  form       Form           @relation(fields: [formId], references: [id], onDelete: Cascade)
-  formId     String         @db.ObjectId
-  person     Person?        @relation(fields: [personId], references: [id], onDelete: Cascade)
-  personId   String?        @db.ObjectId
-  responseId String?        @unique
-  status     DisplayStatus?
-
-  @@index([formId])
-  @@index([personId, createdAt])
 }
 
 model Person {
@@ -138,31 +15,29 @@ model Person {
   environment   Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
   environmentId String      @db.ObjectId
   responses     Response[]
-  // attributes    Attribute[]
   displays      Display[]
-  // actions       Action[]
 
   @@unique([environmentId, userId])
   @@index([environmentId])
 }
 
 model Response {
-  id               String          @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt        DateTime        @default(now()) @map(name: "created_at")
-  updatedAt        DateTime        @updatedAt @map(name: "updated_at")
-  finished         Boolean         @default(false)
-  form             Form            @relation(fields: [formId], references: [id], onDelete: Cascade)
-  formId           String          @db.ObjectId
-  person           Person?         @relation(fields: [personId], references: [id], onDelete: Cascade)
-  personId         String?         @db.ObjectId
-  notes            ResponseNote[]
+  id         String           @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt  DateTime         @default(now()) @map(name: "created_at")
+  updatedAt  DateTime         @updatedAt @map(name: "updated_at")
+  finished   Boolean          @default(false)
+  form       Form             @relation(fields: [formId], references: [id], onDelete: Cascade)
+  formId     String           @db.ObjectId
+  person     Person?          @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId   String?          @db.ObjectId
+  notes      ResponseNote[]
   /// @zod.custom(imports.ZResponseData)
   /// [ResponseData]
-  data             Json              @default("{}")
+  data       Json             @default("{}")
   /// @zod.custom(imports.ZResponseMeta)
   /// [ResponseMeta]
-  meta             Json              @default("{}")
-  tags             TagsOnResponses[]
+  meta       Json             @default("{}")
+  tags       TagsOnResponses[]
 }
 
 model ResponseNote {
@@ -204,53 +79,122 @@ model TagsOnResponses {
   @@index([responseId])
 }
 
+enum FormStatus {
+  draft
+  scheduled
+  inProgress
+  paused
+  completed
+}
+
+enum DisplayStatus {
+  seen
+  responded
+}
+
+model Display {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt     DateTime    @default(now()) @map(name: "created_at")
+  updatedAt     DateTime    @updatedAt @map(name: "updated_at")
+  form          Form        @relation(fields: [formId], references: [id], onDelete: Cascade)
+  formId        String      @db.ObjectId
+  person        Person?     @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId      String?     @db.ObjectId
+  responseId    String?     @unique
+  status        DisplayStatus?
+
+  @@index([formId])
+  @@index([personId, createdAt])
+}
+
+enum displayOptions {
+  displayOnce
+  displayMultiple
+  displaySome
+  respondMultiple
+}
+
 model Form {
-  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt           DateTime        @default(now()) @map(name: "created_at")
-  updatedAt           DateTime        @updatedAt @map(name: "updated_at")
+  id                  String       @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt           DateTime     @default(now()) @map(name: "created_at")
+  updatedAt           DateTime     @updatedAt @map(name: "updated_at")
   name                String
   redirectUrl         String?
-  environment         Environment     @relation(fields: [environmentId], references: [id], onDelete: Cascade)
-  environmentId       String          @db.ObjectId
-  creator             User?           @relation(fields: [createdBy], references: [id])
-  createdBy           String?         @db.ObjectId
-  status              SurveyStatus    @default(draft)
-  /// @zod.custom(imports.ZSurveyWelcomeCard)
-  /// [SurveyWelcomeCard]
-  welcomeCard         Json                    @default("{\"enabled\": false}")
-  /// @zod.custom(imports.ZSurveyQuestions)
-  /// [SurveyQuestions]
-  questions           Json                    @default("[]")
-  /// @zod.custom(imports.ZSurveyThankYouCard)
-  /// [SurveyThankYouCard]
-  thankYouCard        Json                    @default("{\"enabled\": false}")
-  responses            Response[]
+  environment         Environment  @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+  environmentId       String       @db.ObjectId
+  creator             User?        @relation(fields: [createdBy], references: [id])
+  createdBy           String?      @db.ObjectId
+  status              FormStatus   @default(draft)
+  /// @zod.custom(imports.ZFormWelcomeCard)
+  /// [FormWelcomeCard]
+  welcomeCard         Json         @default("{\"enabled\": false}")
+  /// @zod.custom(imports.ZFormQuestions)
+  /// [FormQuestions]
+  questions           Json         @default("[]")
+  /// @zod.custom(imports.ZFormThankYouCard)
+  /// [FormThankYouCard]
+  thankYouCard        Json         @default("{\"enabled\": false}")
+  responses           Response[]
+  displayOption       displayOptions          @default(displayOnce)
   recontactDays       Int?
   displayLimit        Int?
   displays            Display[]
   autoClose           Int?
   autoComplete        Int?
-  delay               Int                     @default(0)
+  delay               Int          @default(0)
   runOnDate           DateTime?
   closeOnDate         DateTime?
+  /// @zod.custom(imports.ZSurveyClosedMessage)
+  /// [SurveyClosedMessage]
   surveyClosedMessage Json?
+  
+  /// @zod.custom(imports.ZFormProductOverwrites)
+  /// [FormProductOverwrites]
+  productOverwrites Json?
 
-  /// @zod.custom(imports.ZFormStyling)
-  /// [FormStyling]
-  styling Json?
-
-  verifyEmail        Json?
-  resultShareKey     String?          @unique
-  displayPercentage  Float?
+  styling             Json?
+  verifyEmail         Json?
+  pin                 String?
+  resultShareKey      String?      @unique
+  displayPercentage   Float?
 
   @@index([environmentId, updatedAt])
 }
 
+model Environment {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt     DateTime     @default(now()) @map(name: "created_at")
+  updatedAt     DateTime     @updatedAt @map(name: "updated_at")
+  product       Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId     String       @db.ObjectId
+  forms         Form[]
+  people        Person[]
+  tags          Tag[]
+}
+
+model Product {
+  id                   String        @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt            DateTime      @default(now()) @map(name: "created_at")
+  updatedAt            DateTime      @updatedAt @map(name: "updated_at")
+  name                 String
+  organization         Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId       String        @db.ObjectId
+  environments         Environment[]
+  brandColor           String? // deprecated; use styling.brandColor instead
+  highlightBorderColor String? // deprecated
+  /// @zod.custom(imports.ZProductStyling)
+  /// [Styling]
+  styling              Json        @default("{\"allowStyleOverwrite\":true}")
+  recontactDays        Int             @default(7)
+  darkOverlay          Boolean     @default(false)
+  logo                 Json?
+}
+
 model Organization {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  id                   String        @id @default(auto()) @map("_id") @db.ObjectId
   createdAt   DateTime     @default(now()) @map(name: "created_at")
   updatedAt   DateTime     @updatedAt @map(name: "updated_at")
-  // name        String
+  name        String
   memberships Membership[]
   products    Product[]
   /// @zod.custom(imports.ZTeamBilling)
@@ -267,22 +211,19 @@ enum MembershipRole {
   viewer
 }
 
+
 model Membership {
-  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
   organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId String         @db.ObjectId
   user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId         String         @db.ObjectId
   accepted       Boolean        @default(false)
   role           MembershipRole
-
-  @@unique([userId, organizationId])
-  @@index([userId])
-  @@index([organizationId])
 }
 
 model Invite {
-  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
   email          String
   name           String?
   organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -298,4 +239,81 @@ model Invite {
 
   @@index([email, organizationId])
   @@index([organizationId])
+}
+
+enum IdentityProvider {
+  email
+  google
+}
+
+model Account {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt         DateTime @default(now()) @map(name: "created_at")
+  updatedAt         DateTime @updatedAt @map(name: "updated_at")
+  user              User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String   @db.ObjectId
+  type              String
+  provider          String
+  providerAccountId String
+  access_token      String?  @db.String
+  refresh_token     String?  @db.String
+  expires_at        Int?
+  ext_expires_in    Int?
+  token_type        String?
+  scope             String?
+  id_token          String?  @db.String
+  session_state     String?
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+enum Role {
+  project_manager
+  engineer
+  founder
+  marketing_specialist
+  other
+}
+
+enum Objective {
+  increase_conversion
+  improve_user_retention
+  increase_user_adoption
+  sharpen_marketing_messaging
+  support_sales
+  other
+}
+
+model User {
+  id                        String           @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt                 DateTime         @default(now()) @map(name: "created_at")
+  updatedAt                 DateTime         @updatedAt @map(name: "updated_at")
+  name                      String
+  email                     String           @unique
+  emailVerified             DateTime?        @map(name: "email_verified")
+  imageUrl                  String?
+  password                  String?
+  identityProvider          IdentityProvider @default(email)
+  identityProviderAccountId String?
+  memberships               Membership[]
+  accounts                  Account[]
+  responseNotes             ResponseNote[]
+  groupId                   String?
+  invitesCreated            Invite[]         @relation("inviteCreatedBy")
+  invitesAccepted           Invite[]         @relation("inviteAcceptedBy")
+  role                      Role?
+  objective                 Objective?
+  /// @zod.custom(imports.ZUserNotificationSettings)
+  /// @zod.custom(imports.ZUserNotificationSettings)
+  /// [UserNotificationSettings]
+  notificationSettings      Json             @default("{}")
+  forms                     Form[]
+}
+
+model ShortUrl {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @updatedAt @map(name: "updated_at")
+  url       String   @unique
 }
