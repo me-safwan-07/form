@@ -65,3 +65,12 @@ export const BILLING_LIMITS = {
 } as const;
 
 export const DEFAULT_BRAND_COLOR = "#64748b";
+
+export const styling = {
+  styling: {
+    allowStyleOverwrite: true,
+    brandColor: {
+      light: DEFAULT_BRAND_COLOR
+    }
+  }
+}

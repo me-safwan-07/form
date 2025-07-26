@@ -8,7 +8,7 @@ import { productCache } from "./cache";
 import { TProduct, TProductUpdateInput, ZProduct, ZProductUpdateInput } from "@/packages/types/product";
 import { createEnvironment } from "../environment/service";
 import { z } from "zod";
-import { ZOptionalNumber, ZString } from "@/packages/types/common";
+import { ZOptionalNumber } from "@/packages/types/common";
 
 
 const selectProduct = {
@@ -16,7 +16,7 @@ const selectProduct = {
   createdAt: true,
   updatedAt: true,
   // name: true,
-  organizationId: true,
+  // organizationId: true,
   darkOverlay: true,
   environments: true,
   styling: true,
@@ -163,10 +163,9 @@ export const getProduct = async (productId: string): Promise<TProduct | null> =>
   )();;
 
 export const createProduct = async (
-  organizationId: string,
   productInput: Partial<TProductUpdateInput>
 ): Promise<TProduct> => {
-  validateInputs([organizationId, ZString],[productInput, ZProductUpdateInput.partial()]);
+  validateInputs([productInput, ZProductUpdateInput.partial()]);
 
   const { environments, ...data } = productInput;
 
@@ -174,15 +173,13 @@ export const createProduct = async (
     const product = await prisma.product.create({
       data: {
         ...data,
-        // name: productInput.name,
-        organizationId,
       },
       select: selectProduct,
     });
 
     productCache.revalidate({
       id: product.id,
-      organizationId: product.organizationId,
+      // organizationId: product.organizationId,
     });
 
 

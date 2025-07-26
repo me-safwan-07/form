@@ -6,8 +6,8 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/packages/database/client";
 import { DatabaseError, ResourceNotFoundError, ValidationError } from "@/packages/types/errors";
 import { z } from "zod";
-import { getOrganizationsByUserId } from "../organization/service";
 import { getProducts } from "../product/service";
+import { getOrganizationsByUserId } from "../organization/service";
 
 export const getEnvironment = (environmentId: string): Promise<TEnvironment | null> =>
     cache(
@@ -85,21 +85,28 @@ export const getEnvironments = (productId: string): Promise<TEnvironment[]> =>
 export const getFirstEnvironmentByUserId = async (userId: string): Promise<TEnvironment | null> => {
     try {
         const organizations = await getOrganizationsByUserId(userId);
-        
-        if (!organizations && organizations.length === 0) {
+        if (organizations.length === 0) {
             throw new Error(`Unable to get first environment: User ${userId} has no organizations`);
         }
         const firstOrganization = organizations[0];
-        const products = await getProducts(firstOrganization.id);
-        console.log(products);
-        if (!products && products.length === 0) {
+        const product =  await getProducts(firstOrganization.id);
+        if (product.length === 0) {
             throw new Error(
                 `Unable to get first environment: Organization ${firstOrganization.id} has no products`
             );
-        };
-        const firstProduct = products[0];
+        }
+        const firstProduct = product[0];
+        const productEnvironment = firstProduct.environments?.find(
+            (environment) => environment
+        );
 
-        return firstProduct;
+        if (!productEnvironment) {
+            throw new Error(
+                `Unable to get first environment: Product ${firstProduct.id} has no production environment`
+            );
+        }
+
+        return productEnvironment;
     } catch (error) {
         throw error;
     }

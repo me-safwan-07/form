@@ -9,7 +9,6 @@ import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from "./constants";
 import { createAccount } from "./account/service";
 import { IdentityProvider } from "@prisma/client";
 
-
 export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
@@ -223,7 +222,6 @@ export const authOptions: NextAuthOptions = {
                 await updateUser(userProfile.id, {
                     notificationSettings: updatedNotificationSettings,
                 });
-
                 
                 return true;
             }
