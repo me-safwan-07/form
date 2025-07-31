@@ -1,1 +1,1 @@
-{<img src="https://wakatime.com/badge/github/me-safwan-07/form.svg" alt="wakatime" />}[https://wakatime.com/badge/github/me-safwan-07/form]
+<img src="https://wakatime.com/badge/github/me-safwan-07/form.svg" alt="wakatime" />
